@@ -6,4 +6,7 @@ urlpatterns = [
     path("search/", views.search, name="search"),
     path("download/", views.start_download, name="start_download"),
     path("series-metadata/", views.series_metadata, name="series_metadata"),
+    path("add-to-list/", views.add_to_list, name="add_to_list"),
+    path("remove-from-list/", views.remove_from_list, name="remove_from_list"),
+    path("list/", views.my_list, name="my_list"),
 ]

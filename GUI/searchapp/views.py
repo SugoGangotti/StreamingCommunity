@@ -153,7 +153,8 @@ def _search_results_to_list(
 @require_http_methods(["GET"])
 def search_home(request: HttpRequest) -> HttpResponse:
     form = SearchForm()
-    return render(request, "searchapp/home.html", {"form": form})
+    watchlist = request.session.get("watchlist", [])
+    return render(request, "searchapp/home.html", {"form": form, "watchlist": watchlist})
 
 
 @require_http_methods(["POST"])
@@ -334,6 +335,161 @@ def series_metadata(request: HttpRequest) -> JsonResponse:
         )
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+def _normalize_item_for_display(item_dict: Dict[str, Any], source_alias: str) -> Dict[str, Any]:
+    item = dict(item_dict) if isinstance(item_dict, dict) else {}
+    # Display fields
+    item["display_title"] = (
+        item.get("display_title")
+        or item.get("title")
+        or item.get("name")
+        or item.get("slug")
+        or "Senza titolo"
+    )
+    item["display_type"] = item.get("display_type") or item.get("type") or item.get("media_type") or "Unknown"
+    item["source"] = (source_alias or item.get("source_alias") or "").capitalize()
+    item["source_alias"] = source_alias or item.get("source_alias")
+
+    # Release year normalization
+    release_raw = (
+        item.get("display_release")
+        or item.get("release_date")
+        or item.get("first_air_date")
+        or item.get("air_date")
+        or item.get("date")
+        or item.get("publish_date")
+        or item.get("publishedAt")
+    )
+    release_year = item.get("year") or item.get("release_year") or item.get("start_year")
+    display_release = None
+    if release_raw:
+        try:
+            parsed_date = None
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d", "%d-%m-%Y", "%Y"):
+                try:
+                    parsed_date = datetime.strptime(str(release_raw)[:10], fmt)
+                    break
+                except Exception:
+                    continue
+            if parsed_date:
+                display_release = str(parsed_date.year)
+            else:
+                display_release = str(release_raw)[:4]
+        except Exception:
+            display_release = str(release_raw)
+    elif release_year:
+        display_release = str(release_year)
+    item["display_release"] = display_release
+
+    # Image
+    bg_image_url = (
+        item.get("bg_image_url")
+        or item.get("poster")
+        or item.get("poster_url")
+        or item.get("image")
+        or item.get("image_url")
+        or item.get("cover")
+        or item.get("cover_url")
+        or item.get("thumbnail")
+        or item.get("thumb")
+        or item.get("backdrop")
+        or item.get("backdrop_url")
+    )
+    if isinstance(bg_image_url, dict):
+        bg_image_url = (
+            bg_image_url.get("url")
+            or bg_image_url.get("large")
+            or bg_image_url.get("medium")
+            or bg_image_url.get("small")
+        )
+    item["bg_image_url"] = bg_image_url
+
+    # Ensure payload_json
+    try:
+        item["payload_json"] = json.dumps(item)
+    except Exception:
+        item["payload_json"] = json.dumps({k: item.get(k) for k in ["id", "name", "title", "type", "url", "slug"] if k in item})
+    return item
+
+
+def _watchlist_add(request: HttpRequest, item: Dict[str, Any]) -> None:
+    key = (
+        (item.get("source_alias") or "")
+        + "::"
+        + (str(item.get("id")) if item.get("id") is not None else "")
+        + "::"
+        + (item.get("slug") or item.get("url") or item.get("display_title") or "")
+    )
+    wl = request.session.get("watchlist", [])
+    if not any(
+        (
+            (w.get("source_alias") or "") + "::" + (str(w.get("id")) if w.get("id") is not None else "") + "::" + (w.get("slug") or w.get("url") or w.get("display_title") or "")
+        )
+        == key
+        for w in wl
+    ):
+        wl.append(item)
+        request.session["watchlist"] = wl
+        request.session.modified = True
+
+
+@require_http_methods(["POST"])
+def add_to_list(request: HttpRequest) -> HttpResponse:
+    source_alias = request.POST.get("source_alias") or ""
+    item_payload_raw = request.POST.get("item_payload") or ""
+    if not source_alias or not item_payload_raw:
+        messages.error(request, "Parametri mancanti per aggiungere alla lista")
+        return redirect("search_home")
+    try:
+        payload = json.loads(item_payload_raw)
+    except Exception:
+        messages.error(request, "Payload non valido")
+        return redirect("search_home")
+
+    item = _normalize_item_for_display(payload, source_alias)
+    _watchlist_add(request, item)
+
+    messages.success(request, f"Aggiunto '{item.get('display_title', 'contenuto')}' alla lista")
+    return redirect("my_list")
+
+
+@require_http_methods(["GET"])
+def my_list(request: HttpRequest) -> HttpResponse:
+    watchlist = request.session.get("watchlist", [])
+    return render(request, "searchapp/home.html", {"form": SearchForm(), "watchlist": watchlist})
+
+
+@require_http_methods(["POST"])
+def remove_from_list(request: HttpRequest) -> HttpResponse:
+    source_alias = request.POST.get("source_alias") or ""
+    item_payload_raw = request.POST.get("item_payload") or ""
+    try:
+        payload = json.loads(item_payload_raw) if item_payload_raw else {}
+    except Exception:
+        payload = {}
+    if not source_alias or not payload:
+        messages.error(request, "Parametri mancanti per rimuovere dalla lista")
+        return redirect("my_list")
+
+    item = _normalize_item_for_display(payload, source_alias)
+    key = (
+        (item.get("source_alias") or "")
+        + "::"
+        + (str(item.get("id")) if item.get("id") is not None else "")
+        + "::"
+        + (item.get("slug") or item.get("url") or item.get("display_title") or "")
+    )
+
+    wl = request.session.get("watchlist", [])
+    new_wl = [w for w in wl if (
+        (w.get("source_alias") or "") + "::" + (str(w.get("id")) if w.get("id") is not None else "") + "::" + (w.get("slug") or w.get("url") or w.get("display_title") or "")
+    ) != key]
+    request.session["watchlist"] = new_wl
+    request.session.modified = True
+
+    messages.success(request, f"Rimosso '{item.get('display_title', 'contenuto')}' dalla lista")
+    return redirect("my_list")
 
 
 @require_http_methods(["POST"])
