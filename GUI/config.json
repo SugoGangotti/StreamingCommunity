@@ -11,6 +11,20 @@
     "validate_github_config": true,
     "bypass_dns": false
   },
+  "WEBSITE_CONFIG": {
+    "multi_user": true,
+    "require_login": true,
+    "users": [
+      {
+        "username": "admin",
+        "password": "admin"
+      },
+      {
+        "username": "test",
+        "password": "tester"
+      }
+    ]
+  },
   "OUT_FOLDER": {
     "root_path": "../Video",
     "movie_folder_name": "Movie",
