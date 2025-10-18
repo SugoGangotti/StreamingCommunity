@@ -111,12 +111,12 @@
       {% if results %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {% for item in results %}
-            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 hover:bg-gray-750 transition-all duration-300 transform hover:scale-105 animate-bounce-in relative overflow-hidden" style="animation-delay: {{ forloop.counter }}00ms">
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 animate-bounce-in relative overflow-hidden card-2-3 flex flex-col" style="animation-delay: {{ forloop.counter }}00ms">
               {% if item.bg_image_url %}
               <div class="absolute inset-0 opacity-20 bg-center bg-cover" style="background-image: url('{{ item.bg_image_url }}');"></div>
               <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent"></div>
               {% endif %}
-              <div class="relative">
+              <div class="relative mt-auto">
               <!-- Content Header -->
                 <div class="mb-4">
                 <h3 class="font-semibold text-white text-lg mb-2 line-clamp-2">{{ item.display_title }}</h3>
@@ -231,19 +231,35 @@
   <style>
     /* Custom form styling */
     select, input {
-      @apply bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm;
+      background-color: #374151; /* bg-gray-700 */
+      border: 1px solid #4b5563; /* border-gray-600 */
+      color: #ffffff; /* text-white */
+      border-radius: 0.5rem; /* rounded-lg */
+      width: 100%; /* w-full */
+      font-size: 0.875rem; /* text-sm */
+      transition-property: all; /* transition-all */
+      transition-duration: 200ms; /* duration-200 */
+    }
+    ::placeholder {
+      color: #9ca3af; /* placeholder-gray-400 */
     }
     
     /* Specific styling for select */
     select {
-      @apply py-2 px-10; /* Padding per le icone laterali */
+      padding-top: 0.5rem; /* py-2 */
+      padding-bottom: 0.5rem; /* py-2 */
+      padding-left: 2.5rem; /* px-10 */
+      padding-right: 2.5rem; /* px-10 */
       color: white !important;
       background-image: none !important; /* Rimuove la freccia di default */
     }
     
     /* Specific styling for input */
     input {
-      @apply py-2 px-10; /* Padding per le icone laterali */
+      padding-top: 0.5rem; /* py-2 */
+      padding-bottom: 0.5rem; /* py-2 */
+      padding-left: 2.5rem; /* px-10 */
+      padding-right: 2.5rem; /* px-10 */
     }
     
     select option {
@@ -252,20 +268,17 @@
       color: white !important;
     }
     
-    /* Fix per le opzioni del select su alcuni browser */
-    select option {
-      background-color: #374151 !important;
-      color: white !important;
-    }
     
     /* Hover effects */
     select:hover, input:hover {
-      @apply border-gray-500;
+      border-color: #6b7280; /* border-gray-500 */
     }
     
     /* Focus effects */
     select:focus, input:focus {
-      @apply border-blue-500 ring-2 ring-blue-500/20;
+      outline: none; /* focus:outline-none */
+      border-color: #3b82f6; /* border-blue-500 */
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* ring-2 ring-blue-500/20 */
     }
     
     /* Line clamp utility */
@@ -301,6 +314,10 @@
     /* Smooth scrolling */
     html {
       scroll-behavior: smooth;
+    }
+    
+    .card-2-3 {
+      aspect-ratio: 2 / 3;
     }
   </style>
   <script>
