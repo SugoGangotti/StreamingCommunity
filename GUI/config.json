@@ -13,7 +13,7 @@
   },
   "WEBSITE_CONFIG": {
     "multi_user": true,
-    "require_login": true,
+    "require_login_to_download": true,
     "users": [
       {
         "username": "admin",

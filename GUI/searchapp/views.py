@@ -1,6 +1,8 @@
 import threading
 import importlib
 import json
+import os
+import uuid
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
@@ -8,8 +10,24 @@ from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login
+from django.urls import reverse
 
 from .forms import SearchForm, DownloadForm
+
+
+def _load_config() -> Dict[str, Any]:
+    try:
+        base_dir = os.path.dirname(os.path.dirname(__file__))  # GUI/
+        cfg_path = os.path.join(base_dir, "config.json")
+        with open(cfg_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _is_logged_in(request: HttpRequest) -> bool:
+    return bool(request.session.get("auth_user"))
 
 
 def _load_site_search(site: str):
@@ -413,25 +431,41 @@ def _normalize_item_for_display(item_dict: Dict[str, Any], source_alias: str) ->
     return item
 
 
-def _watchlist_add(request: HttpRequest, item: Dict[str, Any]) -> None:
-    key = (
+def _queue_key(request: HttpRequest) -> str:
+    user = request.session.get("auth_user") or "anon"
+    return f"queue:{user}"
+
+
+def _get_queue(request: HttpRequest) -> List[Dict[str, Any]]:
+    return list(request.session.get(_queue_key(request), []))
+
+
+def _save_queue(request: HttpRequest, queue_items: List[Dict[str, Any]]) -> None:
+    request.session[_queue_key(request)] = queue_items
+    request.session.modified = True
+
+
+def _make_queue_key(item: Dict[str, Any]) -> str:
+    return (
         (item.get("source_alias") or "")
         + "::"
         + (str(item.get("id")) if item.get("id") is not None else "")
         + "::"
         + (item.get("slug") or item.get("url") or item.get("display_title") or "")
     )
-    wl = request.session.get("watchlist", [])
-    if not any(
-        (
-            (w.get("source_alias") or "") + "::" + (str(w.get("id")) if w.get("id") is not None else "") + "::" + (w.get("slug") or w.get("url") or w.get("display_title") or "")
-        )
-        == key
-        for w in wl
-    ):
-        wl.append(item)
-        request.session["watchlist"] = wl
-        request.session.modified = True
+
+
+def _watchlist_add(request: HttpRequest, item: Dict[str, Any]) -> None:
+    q = _get_queue(request)
+    key = _make_queue_key(item)
+    if any(_make_queue_key(w) == key for w in q):
+        return
+    job = dict(item)
+    job["job_id"] = str(uuid.uuid4())
+    job["status"] = "pending"
+    job["added_at"] = datetime.utcnow().isoformat()
+    q.append(job)
+    _save_queue(request, q)
 
 
 @require_http_methods(["POST"])
@@ -456,48 +490,51 @@ def add_to_list(request: HttpRequest) -> HttpResponse:
 
 @require_http_methods(["GET"])
 def my_list(request: HttpRequest) -> HttpResponse:
-    watchlist = request.session.get("watchlist", [])
-    return render(request, "searchapp/home.html", {"form": SearchForm(), "watchlist": watchlist})
+    watchlist = _get_queue(request)
+    return render(request, "searchapp/queue.html", {"watchlist": watchlist})
 
 
 @require_http_methods(["POST"])
 def remove_from_list(request: HttpRequest) -> HttpResponse:
     source_alias = request.POST.get("source_alias") or ""
     item_payload_raw = request.POST.get("item_payload") or ""
+    job_id = request.POST.get("job_id") or ""
     try:
         payload = json.loads(item_payload_raw) if item_payload_raw else {}
     except Exception:
         payload = {}
-    if not source_alias or not payload:
-        messages.error(request, "Parametri mancanti per rimuovere dalla lista")
+    if not source_alias and not job_id and not payload:
+        messages.error(request, "Parametri mancanti per rimuovere dalla coda")
         return redirect("my_list")
 
-    item = _normalize_item_for_display(payload, source_alias)
-    key = (
-        (item.get("source_alias") or "")
-        + "::"
-        + (str(item.get("id")) if item.get("id") is not None else "")
-        + "::"
-        + (item.get("slug") or item.get("url") or item.get("display_title") or "")
-    )
+    q = _get_queue(request)
+    if job_id:
+        new_q = [w for w in q if w.get("job_id") != job_id]
+    else:
+        item = _normalize_item_for_display(payload, source_alias)
+        key = _make_queue_key(item)
+        new_q = [w for w in q if _make_queue_key(w) != key]
+    _save_queue(request, new_q)
 
-    wl = request.session.get("watchlist", [])
-    new_wl = [w for w in wl if (
-        (w.get("source_alias") or "") + "::" + (str(w.get("id")) if w.get("id") is not None else "") + "::" + (w.get("slug") or w.get("url") or w.get("display_title") or "")
-    ) != key]
-    request.session["watchlist"] = new_wl
-    request.session.modified = True
-
-    messages.success(request, f"Rimosso '{item.get('display_title', 'contenuto')}' dalla lista")
+    messages.success(request, "Elemento rimosso dalla coda")
     return redirect("my_list")
 
 
 @require_http_methods(["POST"])
 def start_download(request: HttpRequest) -> HttpResponse:
+    cfg = _load_config()
+    if cfg.get("WEBSITE_CONFIG", {}).get("require_login_to_download") is True and not _is_logged_in(request):
+        messages.error(request, "Devi effettuare il login per scaricare")
+        login_url = reverse("login")
+        next_target = request.META.get("HTTP_REFERER", reverse("search_home"))
+        return redirect(f"{login_url}?next={next_target}")
+
     form = DownloadForm(request.POST)
     if not form.is_valid():
         messages.error(request, "Dati non validi")
         return redirect("search_home")
+
+    job_id = request.POST.get("job_id") or ""
 
     source_alias = form.cleaned_data["source_alias"]
     item_payload_raw = form.cleaned_data["item_payload"]
@@ -539,6 +576,16 @@ def start_download(request: HttpRequest) -> HttpResponse:
     ):
         episode = "*"
 
+    # If job_id provided, mark in_progress in queue
+    if job_id:
+        q = _get_queue(request)
+        for w in q:
+            if w.get("job_id") == job_id:
+                w["status"] = "in_progress"
+                w["started_at"] = datetime.utcnow().isoformat()
+                break
+        _save_queue(request, q)
+
     _run_download_in_thread(site, item_payload, season, episode)
 
     # Messaggio di successo con dettagli
@@ -554,4 +601,42 @@ def start_download(request: HttpRequest) -> HttpResponse:
         f"Il download sta procedendo in background.",
     )
 
+    return redirect("my_list")
+
+
+@require_http_methods(["GET", "POST"])
+def login(request: HttpRequest) -> HttpResponse:
+    if request.method == "GET":
+        return render(request, "searchapp/login.html")
+
+    username = (request.POST.get("username") or "").strip()
+    password = request.POST.get("password") or ""
+    remember = request.POST.get("remember")
+
+    cfg = _load_config()
+    users = cfg.get("WEBSITE_CONFIG", {}).get("users", [])
+
+    authed = any(
+        (u.get("username") == username and u.get("password") == password)
+        for u in users
+    )
+
+    if not authed:
+        messages.error(request, "Credenziali non valide")
+        return render(request, "searchapp/login.html", status=401)
+
+    request.session["auth_user"] = username
+    if not remember:
+        request.session.set_expiry(0)
+
+    messages.success(request, f"Benvenuto {username}")
+
+    next_url = request.POST.get("next") or request.GET.get("next")
+    if next_url and next_url.startswith("/"):
+        return redirect(next_url)
     return redirect("search_home")
+
+
+@require_http_methods(["GET"])
+def settings(request: HttpRequest) -> HttpResponse:
+    return render(request, "searchapp/settings.html")

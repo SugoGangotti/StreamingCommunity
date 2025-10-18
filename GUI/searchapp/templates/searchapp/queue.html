@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StreamingCommunity - Coda download</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-900 min-h-screen text-gray-100">
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236B7280\" fill-opacity=\"0.03\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+
+  <div class="relative z-10 container mx-auto px-4 py-8">
+    <!-- Navbar -->
+    <nav class="mb-8 flex items-center justify-between bg-gray-800/70 border border-gray-700 rounded-xl px-4 py-3">
+      <a href="{% url 'search_home' %}" class="flex items-center gap-2 text-white font-semibold">
+        <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </span>
+        StreamingCommunity
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'settings' %}" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Impostazioni</a>
+        <a href="{% url 'search_home' %}" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Search</a>
+        <a href="{% url 'my_list' %}" class="px-3 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">Queue</a>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-2xl font-bold text-white mb-6">Coda download</h1>
+      {% if watchlist %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for item in watchlist %}
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 relative overflow-hidden">
+          {% if item.bg_image_url %}
+          <div class="absolute inset-0 opacity-20 bg-center bg-cover" style="background-image: url('{{ item.bg_image_url }}');"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent"></div>
+          {% endif %}
+          <div class="relative flex flex-col h-full">
+            <div class="mb-4">
+              <h3 class="font-semibold text-white text-lg mb-2 line-clamp-2">{{ item.display_title }}</h3>
+              <div class="flex items-center gap-2 text-sm text-gray-400">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-700">{{ item.display_type }}</span>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">{{ item.source }}</span>
+                {% if item.status %}
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border
+                  {% if item.status == 'in_progress' %} bg-yellow-900/50 text-yellow-300 border-yellow-700
+                  {% elif item.status == 'pending' %} bg-indigo-900/50 text-indigo-300 border-indigo-700
+                  {% elif item.status == 'completed' %} bg-green-900/50 text-green-300 border-green-700
+                  {% else %} bg-gray-800 text-gray-300 border-gray-600
+                  {% endif %}">
+                  {{ item.status|title }}
+                </span>
+                {% endif %}
+              </div>
+              {% if item.display_release %}
+              <div class="mt-2 text-xs text-gray-300">{{ item.display_release }}</div>
+              {% endif %}
+            </div>
+            <div class="mt-auto flex items-stretch gap-2">
+              <form action="{% url 'start_download' %}" method="post" class="flex-1">
+                {% csrf_token %}
+                <input type="hidden" name="source_alias" value="{{ item.source_alias }}">
+                <input type="hidden" name="item_payload" value='{{ item.payload_json|escape }}'>
+                <input type="hidden" name="season" value="">
+                <input type="hidden" name="episode" value="">
+                {% if item.job_id %}<input type="hidden" name="job_id" value="{{ item.job_id }}">{% endif %}
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500/50 flex items-center justify-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  Avvia download
+                </button>
+              </form>
+              <form action="{% url 'remove_from_list' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="source_alias" value="{{ item.source_alias }}">
+                <input type="hidden" name="item_payload" value='{{ item.payload_json|escape }}'>
+                {% if item.job_id %}<input type="hidden" name="job_id" value="{{ item.job_id }}">{% endif %}
+                <button type="submit" aria-label="Rimuovi" class="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500/50 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path></svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">La coda è vuota</h3>
+        <p class="text-gray-400 mb-6">Aggiungi elementi dalla pagina dei risultati</p>
+        <a href="{% url 'search_home' %}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          Vai alla ricerca
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
