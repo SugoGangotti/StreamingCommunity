@@ -17,19 +17,7 @@
   <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%236B7280\" fill-opacity=\"0.03\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
 
   <div class="relative z-10 container mx-auto px-4 py-8">
-    <nav class="mb-8 flex items-center justify-between bg-gray-800/70 border border-gray-700 rounded-xl px-4 py-3">
-      <a href="{% url 'search_home' %}" class="flex items-center gap-2 text-white font-semibold">
-        <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        </span>
-        StreamingCommunity
-      </a>
-      <div class="flex items-center gap-2">
-        <a href="{% url 'settings' %}" class="px-3 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">Impostazioni</a>
-        <a href="{% url 'search_home' %}" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Search</a>
-        <a href="{% url 'my_list' %}" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Queue</a>
-      </div>
-    </nav>
+    {% include 'searchapp/partials/navbar.html' with active_tab='settings' %}
 
     <div class="max-w-3xl mx-auto">
       <h1 class="text-2xl font-bold text-white mb-4">Impostazioni</h1>

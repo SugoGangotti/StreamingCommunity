@@ -1,0 +1,96 @@
+{% load static %}
+<nav
+  class="mb-8 flex items-center justify-between bg-gray-800/70 border border-gray-700 rounded-xl px-4 py-3"
+>
+  <a
+    href="{% url 'search_home' %}"
+    class="flex items-center gap-2 text-white font-semibold"
+  >
+    <span
+      class="inline-flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg"
+    >
+      <svg
+        class="w-4 h-4 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+    </span>
+    StreamingCommunity
+  </a>
+  <div class="flex items-center gap-2">
+    <a
+      href="{% url 'settings' %}"
+      class="px-3 py-2 rounded-lg text-sm font-medium {% if active_tab == 'settings' %}bg-blue-600 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-700{% endif %}"
+      >Impostazioni</a
+    >
+    <a
+      href="{% url 'search_home' %}"
+      class="px-3 py-2 rounded-lg text-sm font-medium {% if active_tab == 'search' %}bg-blue-600 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-700{% endif %}"
+      >Search</a
+    >
+    <a
+      href="{% url 'my_list' %}"
+      class="px-3 py-2 rounded-lg text-sm font-medium {% if active_tab == 'queue' %}bg-blue-600 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-700{% endif %}"
+      >Queue</a
+    >
+    <div
+      class="ml-2 inline-flex rounded-lg overflow-hidden border border-gray-700"
+    >
+      <button
+        type="button"
+        id="btn-light"
+        class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+        aria-label="Light mode"
+      >
+        Light
+      </button>
+      <button
+        type="button"
+        id="btn-dark"
+        class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+        aria-label="Dark mode"
+      >
+        Dark
+      </button>
+    </div>
+  </div>
+</nav>
+<script>
+  (function () {
+    try {
+      const root = document.documentElement;
+      const apply = (mode) => {
+        if (mode === "dark") {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
+      };
+      const stored = localStorage.getItem("theme");
+      if (stored) {
+        apply(stored);
+      } else {
+        const prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        apply(prefersDark ? "dark" : "light");
+      }
+      const setMode = (mode) => {
+        localStorage.setItem("theme", mode);
+        apply(mode);
+      };
+      const bLight = document.getElementById("btn-light");
+      const bDark = document.getElementById("btn-dark");
+      if (bLight) bLight.onclick = () => setMode("light");
+      if (bDark) bDark.onclick = () => setMode("dark");
+    } catch (e) {}
+  })();
+</script>
