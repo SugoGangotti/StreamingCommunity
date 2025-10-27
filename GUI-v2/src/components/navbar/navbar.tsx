@@ -31,15 +31,6 @@ export default function Navbar() {
       <LogoAndText />
       <div className="flex items-center gap-2">
         <Link
-          to="/settings"
-          className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive(
-            "/settings"
-          )}`}
-        >
-          Impostazioni
-        </Link>
-
-        <Link
           to="/search"
           className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive(
             "/search"
@@ -49,12 +40,21 @@ export default function Navbar() {
         </Link>
 
         <Link
-          to="/queue"
+          to="/downloads"
           className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive(
-            "/queue"
+            "/downloads"
           )}`}
         >
-          Queue
+          Downloads
+        </Link>
+
+        <Link
+          to="/settings"
+          className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive(
+            "/settings"
+          )}`}
+        >
+          Impostazioni
         </Link>
 
         <ThemeButton />

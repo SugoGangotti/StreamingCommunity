@@ -1,69 +1,260 @@
-import { useEffect, useState } from 'react'
+import WIP from "../components/temp/wip";
+import { useState } from "react";
 
-type Prefs = {
-  language: string
-  downloadPath: string
-  defaultPage?: string
-}
-
-function loadPrefs(): Prefs {
-  try { return JSON.parse(localStorage.getItem('prefs') || '{}') } catch { return {} as any }
-}
-function savePrefs(p: Prefs) {
-  localStorage.setItem('prefs', JSON.stringify(p))
-}
+type SettingsData = {
+  videoQuality: string;
+  audioLanguage: string;
+  subtitleLanguage: string;
+  autoplayNext: boolean;
+};
 
 export default function Settings() {
-  const [language, setLanguage] = useState('it')
-  const [downloadPath, setDownloadPath] = useState('C:/Downloads')
-  const [defaultPage, setDefaultPage] = useState<string>('/')
-  const [saved, setSaved] = useState(false)
+  const [activeTab, setActiveTab] = useState("visualizzazione");
+  const [settings, setSettings] = useState<SettingsData>({
+    videoQuality: "HD (1080p)",
+    audioLanguage: "Italiano",
+    subtitleLanguage: "Italiano",
+    autoplayNext: true,
+  });
 
-  useEffect(() => {
-    const p = loadPrefs()
-    if (p.language) setLanguage(p.language)
-    if (p.downloadPath) setDownloadPath(p.downloadPath)
-    if (p.defaultPage) setDefaultPage(p.defaultPage)
-  }, [])
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const onSave = (e: React.FormEvent) => {
-    e.preventDefault()
-    savePrefs({ language, downloadPath, defaultPage })
-    setSaved(true)
-    setTimeout(() => setSaved(false), 1200)
-  }
+  const handleSave = () => {
+    // In a real app, this would save to backend/localStorage
+    console.log("Saving settings:", settings);
+  };
+
+  const handleReset = () => {
+    setSettings({
+      videoQuality: "Auto",
+      audioLanguage: "Italiano",
+      subtitleLanguage: "Nessuno",
+      autoplayNext: false,
+    });
+  };
+
+  const updateSetting = (key: keyof SettingsData, value: string | boolean) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+  };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-white mb-4">Impostazioni</h1>
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
-        <form onSubmit={onSave} className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-200 mb-2">Pagina predefinita (dopo il login)</label>
-            <select value={defaultPage} onChange={e=>setDefaultPage(e.target.value)} className="bg-white text-gray-900 border border-gray-300 rounded-lg py-2 px-3">
-              <option value="/">Home / Search</option>
-              <option value="/home">Home (nuova)</option>
-              <option value="/queue">Queue</option>
-              <option value="/settings">Settings</option>
-            </select>
+    <div className="max-w-6xl mx-auto">
+      <WIP />
+
+      <main className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-10">
+        <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div className="flex flex-wrap justify-between gap-3 p-4">
+            <div className="flex min-w-72 flex-col gap-3">
+              <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                Impostazioni Account
+              </p>
+              <p className="text-gray-400 text-base font-normal leading-normal">
+                Gestisci le tue preferenze di visualizzazione, le notifiche e le
+                impostazioni di download.
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-200 mb-2">Lingua</label>
-            <select value={language} onChange={e=>setLanguage(e.target.value)} className="bg-white text-gray-900 border border-gray-300 rounded-lg py-2 px-3">
-              <option value="it">Italiano</option>
-              <option value="en">English</option>
-            </select>
+
+          {/* Tabs */}
+          <div className="pb-3 mt-6">
+            <div className="flex border-b border-gray-600 px-4 gap-8">
+              <button
+                onClick={() => setActiveTab("visualizzazione")}
+                className={`flex flex-col items-center justify-center pb-[13px] pt-4 transition-colors ${
+                  activeTab === "visualizzazione"
+                    ? "border-b-[3px] border-b-blue-600 text-white"
+                    : "border-b-[3px] border-b-transparent text-gray-400 hover:text-white"
+                }`}
+              >
+                <p className="text-sm font-bold leading-normal tracking-[0.015em]">
+                  Visualizzazione
+                </p>
+              </button>
+              <button
+                onClick={() => setActiveTab("notifiche")}
+                className={`flex flex-col items-center justify-center pb-[13px] pt-4 transition-colors ${
+                  activeTab === "notifiche"
+                    ? "border-b-[3px] border-b-blue-600 text-white"
+                    : "border-b-[3px] border-b-transparent text-gray-400 hover:text-white"
+                }`}
+              >
+                <p className="text-sm font-bold leading-normal tracking-[0.015em]">
+                  Notifiche
+                </p>
+              </button>
+              <button
+                onClick={() => setActiveTab("download")}
+                className={`flex flex-col items-center justify-center pb-[13px] pt-4 transition-colors ${
+                  activeTab === "download"
+                    ? "border-b-[3px] border-b-blue-600 text-white"
+                    : "border-b-[3px] border-b-transparent text-gray-400 hover:text-white"
+                }`}
+              >
+                <p className="text-sm font-bold leading-normal tracking-[0.015em]">
+                  Download
+                </p>
+              </button>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-200 mb-2">Download Path</label>
-            <input value={downloadPath} onChange={e=>setDownloadPath(e.target.value)} className="w-full bg-white text-gray-900 border border-gray-300 rounded-lg py-2 px-3" />
+
+          {/* Settings Content */}
+          <div className="flex flex-col gap-8 p-4">
+            {activeTab === "visualizzazione" && (
+              <section>
+                <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">
+                  Preferenze di Visualizzazione
+                </h2>
+                <div className="flex flex-col divide-y divide-gray-700">
+                  {/* Video Quality */}
+                  <div className="flex items-center gap-4 bg-gray-900 px-4 min-h-[72px] py-3 justify-between">
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-base font-medium leading-normal">
+                        Qualità video predefinita
+                      </p>
+                      <p className="text-gray-400 text-sm font-normal leading-normal">
+                        Imposta la qualità video predefinita per lo streaming.
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <select
+                        value={settings.videoQuality}
+                        onChange={(e) =>
+                          updateSetting("videoQuality", e.target.value)
+                        }
+                        className="form-select bg-gray-800 border-none text-white rounded-lg focus:ring-blue-600 focus:border-blue-600"
+                      >
+                        <option>Auto</option>
+                        <option>HD (1080p)</option>
+                        <option>SD (480p)</option>
+                        <option>4K</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Audio Language */}
+                  <div className="flex items-center gap-4 bg-gray-900 px-4 min-h-[72px] py-3 justify-between">
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-base font-medium leading-normal">
+                        Lingua audio predefinita
+                      </p>
+                      <p className="text-gray-400 text-sm font-normal leading-normal">
+                        Scegli la lingua audio di default.
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <select
+                        value={settings.audioLanguage}
+                        onChange={(e) =>
+                          updateSetting("audioLanguage", e.target.value)
+                        }
+                        className="form-select bg-gray-800 border-none text-white rounded-lg focus:ring-blue-600 focus:border-blue-600"
+                      >
+                        <option>Italiano</option>
+                        <option>Inglese</option>
+                        <option>Spagnolo</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Subtitle Language */}
+                  <div className="flex items-center gap-4 bg-gray-900 px-4 min-h-[72px] py-3 justify-between">
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-base font-medium leading-normal">
+                        Lingua sottotitoli predefinita
+                      </p>
+                      <p className="text-gray-400 text-sm font-normal leading-normal">
+                        Scegli la lingua dei sottotitoli di default.
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <select
+                        value={settings.subtitleLanguage}
+                        onChange={(e) =>
+                          updateSetting("subtitleLanguage", e.target.value)
+                        }
+                        className="form-select bg-gray-800 border-none text-white rounded-lg focus:ring-blue-600 focus:border-blue-600"
+                      >
+                        <option>Nessuno</option>
+                        <option>Italiano</option>
+                        <option>Inglese</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Autoplay */}
+                  <div className="flex items-center gap-4 bg-gray-900 px-4 min-h-[72px] py-3 justify-between">
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-base font-medium leading-normal">
+                        Autoplay prossimo episodio
+                      </p>
+                      <p className="text-gray-400 text-sm font-normal leading-normal">
+                        Riproduci automaticamente l'episodio successivo.
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={settings.autoplayNext}
+                          onChange={(e) =>
+                            updateSetting("autoplayNext", e.target.checked)
+                          }
+                          className="sr-only peer"
+                        />
+                        <div
+                          className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${
+                            settings.autoplayNext
+                              ? "bg-blue-600 after:border-white"
+                              : "bg-gray-800 after:border-gray-300"
+                          }`}
+                        ></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {activeTab === "notifiche" && (
+              <section>
+                <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">
+                  Impostazioni Notifiche
+                </h2>
+                <p className="text-gray-400">
+                  Le impostazioni delle notifiche saranno implementate qui.
+                </p>
+              </section>
+            )}
+
+            {activeTab === "download" && (
+              <section>
+                <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">
+                  Impostazioni Download
+                </h2>
+                <p className="text-gray-400">
+                  Le impostazioni di download saranno implementate qui.
+                </p>
+              </section>
+            )}
           </div>
-          <div className="flex items-center gap-3">
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Salva</button>
-            {saved && <span className="text-green-300 text-sm">Salvato!</span>}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 p-4 mt-8 border-t border-gray-700">
+            <button
+              onClick={handleReset}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-gray-800 text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            >
+              <span className="truncate">Ripristina</span>
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-blue-600 text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            >
+              <span className="truncate">Salva Modifiche</span>
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </main>
     </div>
-  )
+  );
 }

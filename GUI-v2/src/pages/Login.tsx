@@ -1,3 +1,4 @@
+import WIP from "../components/temp/wip";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +18,9 @@ export default function Login() {
     localStorage.setItem("authUser", username);
     if (!remember) sessionStorage.setItem("sessionOnly", "1");
     try {
-      const prefs = JSON.parse(localStorage.getItem("prefs") || "{}") as { defaultPage?: string };
+      const prefs = JSON.parse(localStorage.getItem("prefs") || "{}") as {
+        defaultPage?: string;
+      };
       const target = prefs?.defaultPage || "/";
       nav(target);
     } catch {
@@ -27,6 +30,8 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto animate-fade-in">
+      <WIP />
+
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg">
           <svg
