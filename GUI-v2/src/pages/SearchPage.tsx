@@ -1,79 +1,154 @@
 import WIP from "../components/temp/wip";
 import { useState } from "react";
+import { MediaItem } from "../types/MediaItem";
+import { searchMedia, startDownload, SearchRequest } from "../api/mediaApi";
+import EpisodeSelector from "../components/EpisodeSelector";
 
-type SearchResult = {
-  id: string;
-  title: string;
-  year: string;
-  coverUrl: string;
+type SearchResult = MediaItem & {
   type: "movie" | "series";
+  payload_json: string;
 };
-
-const searchResults: SearchResult[] = [
-  {
-    id: "1",
-    title: "Titolo Film",
-    year: "2023",
-    coverUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBgnVgTnSQcdOROAt8_JOtj-u9m02Dwy3goADiwC1d9bHOhENTWCXgN2H3JsuNZ_9mOCxiXQnMNwFIWOWqIK0aDSpxSgyQT5FmsnIC7mUuPv4X5zFOZJPKcHxLle5-xT7OgJ6fotNfr316u5fiVHg25DNcBdkbN6ZESIbhSjzduc4gC3ZSH5D4i0DTRy88HfJQvzblw5Ov8Fc4m_Yq2RikTtOpzKclTUJlRzIgzl1m5pVvmuYCtXEb9y_X3i0K9ZYuTT9vEgt28YKc-",
-    type: "movie",
-  },
-  {
-    id: "2",
-    title: "Titolo Serie TV",
-    year: "2022",
-    coverUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBF3cpu_cHDA_Hb_tDP-4DG__h1Mj4cWqdgStJi1WsXUdQTmZu8P763pqVIp2SbfzA81rt63r1kOxkh00V_4JQKZYZab4s4W8tcZ6Ewee47ZNXFajdMowtdI0sDVE3Mbb804Eg4Giq3_-d2fW6QVeYFkatQCC3B-tTuUMEWJJzDmsiHs5qlrROIyOeDJaXpdwp2v6UEshzgJcxFWLSuRHsuEWZhQTxYwFpi7-Pwz9nlSI0MEjYwA1ipXnrtA21TFtIHDGLNmfmXaFVb",
-    type: "series",
-  },
-  {
-    id: "3",
-    title: "Un Altro Film",
-    year: "2024",
-    coverUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDRYgxksl4auc0zr4CUfB3K8tKga5z-r-vjIeKFnlPzgSUhFL1ZZg7KDA53gSqXV5RxKEXMAPfwfiGcqtzyvhSjmPkRp0fPhWh7-ni7agj12PdWHrdB3RsJInH4YHdnSA0X3odORPMZLYawcSMQ_WFI4mvuOsncXMJ8E43yFMS-flxZH2rfXbmnNnL5EUn58x8hK0yvBhKulofX-dMDE8zg1tU_W5XJST0wzodxubuEvwBt4XphS5SCymR6pb0y65RYdEgcaNvYIkqL",
-    type: "movie",
-  },
-  {
-    id: "4",
-    title: "Serie Fantascientifica",
-    year: "2021",
-    coverUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDwAkWq2q0Uj8ljCvM1pHqfqEBhDEXpqHucxMNID7TKYSUkV5CQ0IfpT-wdqqNSlV7ALZLM6Yqb42Ct87WrHtW5Yt_TzOOJ4gMdx1qmPiw8OnjGmI_qrPzD3QUw5yyd8eMVMgYBbMbetGPl53ILNuclMa44K9Pcipc3sA7l2siRIsP8Tl032AzkkepjiLh5UbgJHMJDtCwLW3SGFDepV9EE1tsJZFWtcIalX-H0GCDTqFda9QfYAfPlKrSgw9e_mxXFnLhyiLpYBhb2",
-    type: "series",
-  },
-];
-
-const genres = ["Azione", "Commedia", "Drammatico", "Fantascienza", "Altro"];
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState("Drammatico");
-  const [yearRange, setYearRange] = useState({ min: 1990, max: 2024 });
   const [server, setServer] = useState("Server 1");
   const [currentPage, setCurrentPage] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [watchlist, setWatchlist] = useState<MediaItem[]>([]);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
 
-  const handleSearch = () => {
-    setHasSearched(true);
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 3000);
   };
 
-  const handleDownload = (id: string) => {
-    console.log("Download:", id);
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      showMessage("error", "Inserisci un termine di ricerca");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const searchRequest: SearchRequest = {
+        site: server.toLowerCase().replace(" ", ""),
+        query: query.trim(),
+      };
+
+      const results = await searchMedia(searchRequest);
+      setSearchResults(
+        results.map((item, index) => ({
+          ...item,
+          id: item.id || `result-${index}`,
+          type: item.display_type === "Film" ? "movie" : "series",
+          payload_json: JSON.stringify(item),
+        }))
+      );
+      setHasSearched(true);
+      showMessage("success", `Trovati ${results.length} risultati`);
+    } catch (error) {
+      console.error("Search error:", error);
+      showMessage("error", "Errore durante la ricerca");
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleReset = () => {
-    setQuery("");
-    setSelectedGenre("Drammatico");
-    setYearRange({ min: 1990, max: 2024 });
-    setServer("Server 1");
-    setCurrentPage(1);
-    setHasSearched(false);
+  const handleDownloadClick = (item: SearchResult) => {
+    if (item.display_type === "Serie TV") {
+      setSelectedItem(item);
+      setShowEpisodeSelector(true);
+    } else {
+      handleDownload(item);
+    }
+  };
+
+  const handleDownload = async (
+    item: SearchResult,
+    season?: string,
+    episode?: string
+  ) => {
+    try {
+      const downloadRequest = {
+        source_alias: item.source_alias,
+        item_payload: item.payload_json,
+        season: season || (item.display_type === "Serie TV" ? "1" : undefined),
+        episode:
+          episode || (item.display_type === "Serie TV" ? "1" : undefined),
+      };
+
+      const result = await startDownload(downloadRequest);
+
+      if (result.success) {
+        showMessage(
+          "success",
+          result.message || "Download avviato con successo!"
+        );
+        // Add to watchlist
+        if (!watchlist.some((w) => w.id === item.id)) {
+          setWatchlist((prev) => [...prev, item]);
+        }
+      } else {
+        showMessage("error", result.message || "Errore durante il download");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      showMessage("error", "Errore durante il download");
+    }
+  };
+
+  const handleEpisodeDownload = async (season: string, episode: string) => {
+    if (selectedItem) {
+      await handleDownload(selectedItem, season, episode);
+      setShowEpisodeSelector(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleRemoveFromList = async (item: MediaItem) => {
+    try {
+      const result = await import("../api/mediaApi").then((api) =>
+        api.removeFromList({
+          source_alias: item.source_alias,
+          item_payload: JSON.stringify(item),
+        })
+      );
+
+      if (result.success) {
+        setWatchlist((prev) => prev.filter((w) => w.id !== item.id));
+        showMessage("success", "Rimosso dalla lista");
+      } else {
+        showMessage("error", result.message || "Errore durante la rimozione");
+      }
+    } catch (error) {
+      console.error("Remove from list error:", error);
+      showMessage("error", "Errore durante la rimozione");
+    }
   };
 
   return (
     <div className="max-w-6xl mx-auto">
       <WIP />
+
+      {/* Episode Selector Modal */}
+      {showEpisodeSelector && selectedItem && (
+        <EpisodeSelector
+          item={selectedItem}
+          onDownload={handleEpisodeDownload}
+          onClose={() => {
+            setShowEpisodeSelector(false);
+            setSelectedItem(null);
+          }}
+        />
+      )}
 
       <main className="flex-1 px-4 py-10 lg:px-40">
         <div className="mx-auto max-w-[960px]">
@@ -113,82 +188,49 @@ export default function SearchPage() {
                   placeholder="Cerca un film o una serie TV..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
+                <button
+                  onClick={handleSearch}
+                  disabled={isLoading}
+                  className="px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-r-lg transition-colors"
+                >
+                  {isLoading ? (
+                    <svg
+                      className="w-5 h-5 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  )}
+                </button>
               </div>
             </label>
           </div>
 
           {/* Filters */}
           <div className="flex flex-col gap-4 p-4">
-            {/* Genre */}
-            <div className="flex flex-col gap-3">
-              <p className="text-white text-base font-medium leading-normal">
-                Genere
-              </p>
-              <div className="flex gap-3 p-3 flex-wrap pr-4">
-                {genres.map((genre) => (
-                  <button
-                    key={genre}
-                    onClick={() => setSelectedGenre(genre)}
-                    className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-4 ${
-                      selectedGenre === genre
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-800 text-white hover:bg-gray-700"
-                    }`}
-                  >
-                    <p className="text-sm font-medium leading-normal">
-                      {genre}
-                    </p>
-                    {genre === "Altro" && (
-                      <svg
-                        className="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Year Range */}
-            <div className="@container">
-              <div className="relative flex w-full flex-col items-start justify-between gap-3 p-4 @[480px]:flex-row @[480px]:items-center">
-                <p className="text-white text-base font-medium leading-normal w-full shrink-[3]">
-                  Anno di uscita
-                </p>
-                <div className="flex h-[38px] w-full pt-1.5">
-                  <div className="flex h-1 w-full rounded-sm bg-gray-600 pl-[10%] pr-[0%]">
-                    <div className="relative">
-                      <div className="absolute -left-3 -top-1.5 flex flex-col items-center gap-1">
-                        <div className="size-4 rounded-full bg-white"></div>
-                        <p className="text-white text-sm font-normal leading-normal">
-                          {yearRange.min}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="h-1 flex-1 rounded-sm bg-blue-600"></div>
-                    <div className="relative">
-                      <div className="absolute -right-3 -top-1.5 flex flex-col items-center gap-1">
-                        <div className="size-4 rounded-full bg-white"></div>
-                        <p className="text-white text-sm font-normal leading-normal">
-                          {yearRange.max}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Server and Reset */}
             <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
@@ -222,25 +264,6 @@ export default function SearchPage() {
                   </div>
                 </div>
               </div>
-              <button
-                onClick={handleReset}
-                className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
-              >
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Reset Filtri
-              </button>
             </div>
           </div>
 
@@ -252,21 +275,48 @@ export default function SearchPage() {
                   key={result.id}
                   className="group relative overflow-hidden rounded-lg bg-gray-800 shadow-lg transition-transform duration-300 hover:scale-105"
                 >
-                  <img
-                    className="w-full h-auto object-cover"
-                    src={result.coverUrl}
-                    alt={result.title}
-                  />
+                  {result.bg_image_url && (
+                    <img
+                      className="w-full h-auto object-cover"
+                      src={result.bg_image_url}
+                      alt={result.display_title}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/20"></div>
                   <div className="absolute bottom-0 left-0 w-full p-3">
-                    <h3 className="text-white font-bold">{result.title}</h3>
-                    <p className="text-sm text-gray-400">{result.year}</p>
+                    <h3 className="text-white font-bold">
+                      {result.display_title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm text-gray-400">
+                        {result.display_release}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-700">
+                        {result.display_type}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+                        {result.source}
+                      </span>
+                    </div>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <button
-                        onClick={() => handleDownload(result.id)}
-                        className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-blue-600 text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                        onClick={() => handleDownloadClick(result)}
+                        className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-blue-600 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
                       >
-                        <span className="truncate">Download</span>
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        <span className="truncate">Scarica</span>
                       </button>
                     </div>
                   </div>
@@ -319,12 +369,13 @@ export default function SearchPage() {
                   />
                 </svg>
               </button>
-              {[1, 2, 3, "...", 10].map((page, index) => (
+              {Array.from(
+                { length: Math.min(10, Math.ceil(searchResults.length / 12)) },
+                (_, i) => i + 1
+              ).map((page) => (
                 <button
-                  key={index}
-                  onClick={() =>
-                    typeof page === "number" && setCurrentPage(page)
-                  }
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
                   className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                     currentPage === page
                       ? "bg-blue-600 text-white"
@@ -336,7 +387,7 @@ export default function SearchPage() {
               ))}
               <button
                 onClick={() => setCurrentPage(Math.min(10, currentPage + 1))}
-                disabled={currentPage === 10}
+                disabled={currentPage >= Math.ceil(searchResults.length / 12)}
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
               >
                 <svg
@@ -353,6 +404,91 @@ export default function SearchPage() {
                   />
                 </svg>
               </button>
+            </div>
+          )}
+
+          {/* Watchlist Section */}
+          {watchlist.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3">
+                La mia lista
+              </h2>
+              <div className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {watchlist.map((item) => (
+                  <div
+                    key={item.id}
+                    className="group relative overflow-hidden rounded-lg bg-gray-800 shadow-lg"
+                  >
+                    {item.bg_image_url && (
+                      <img
+                        className="w-full h-auto object-cover"
+                        src={item.bg_image_url}
+                        alt={item.display_title}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute bottom-0 left-0 w-full p-3">
+                      <h3 className="text-white font-bold">
+                        {item.display_title}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-gray-400">
+                          {item.display_release}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-700">
+                          {item.display_type}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+                          {item.source}
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() =>
+                              handleDownloadClick(item as SearchResult)
+                            }
+                            className="flex items-center justify-center rounded-lg h-10 px-4 bg-green-600 text-white text-sm font-bold hover:bg-green-700 transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4 mr-2"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                              />
+                            </svg>
+                            Scarica
+                          </button>
+                          <button
+                            onClick={() => handleRemoveFromList(item)}
+                            className="flex items-center justify-center rounded-lg h-10 px-4 bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

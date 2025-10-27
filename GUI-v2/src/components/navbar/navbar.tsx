@@ -1,25 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import LogoAndText from "./subComp/logoAndText";
-import ThemeButton from "./subComp/themeButton";
+
+import { Settings } from "lucide-react";
 
 export default function Navbar() {
   const location = useLocation();
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    const stored = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (stored) return stored;
-    const prefersDark = window.matchMedia?.(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    return prefersDark ? "dark" : "light";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") root.classList.add("dark");
-    else root.classList.remove("dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
 
   const isActive = (path: string) =>
     location.pathname === path
@@ -54,10 +39,8 @@ export default function Navbar() {
             "/settings"
           )}`}
         >
-          Impostazioni
+          <Settings />
         </Link>
-
-        <ThemeButton />
       </div>
     </nav>
   );

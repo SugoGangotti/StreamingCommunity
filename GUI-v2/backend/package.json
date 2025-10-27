@@ -1,0 +1,12 @@
+{
+  "name": "streamingcommunity-backend",
+  "version": "1.0.0",
+  "description": "Django backend for StreamingCommunity",
+  "main": "manage.py",
+  "scripts": {
+    "dev": "python manage.py runserver 0.0.0.0:8000",
+    "migrate": "python manage.py migrate",
+    "makemigrations": "python manage.py makemigrations",
+    "collectstatic": "python manage.py collectstatic --noinput"
+  }
+}

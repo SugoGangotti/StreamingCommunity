@@ -1,3 +1,5 @@
+//TODO: Implement local storage for theme and light/dark mode colors
+
 const themeSwitch = () => {
   return (
     <label className="relative inline-flex items-center cursor-pointer">

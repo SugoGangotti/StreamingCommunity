@@ -179,6 +179,8 @@ def search_home(request: HttpRequest) -> HttpResponse:
 def search(request: HttpRequest) -> HttpResponse:
     form = SearchForm(request.POST)
     if not form.is_valid():
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": "Dati non validi"}, status=400)
         messages.error(request, "Dati non validi")
         return render(request, "searchapp/home.html", {"form": form})
 
@@ -190,8 +192,14 @@ def search(request: HttpRequest) -> HttpResponse:
         database = search_fn(query, get_onlyDatabase=True)
         results = _search_results_to_list(database, site)
     except Exception as e:
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": f"Errore nella ricerca: {e}"}, status=500)
         messages.error(request, f"Errore nella ricerca: {e}")
         return render(request, "searchapp/home.html", {"form": form})
+
+    # Check if request wants JSON response
+    if request.headers.get('Accept', '').find('application/json') != -1:
+        return JsonResponse({"results": results})
 
     download_form = DownloadForm()
     return render(
@@ -491,6 +499,11 @@ def add_to_list(request: HttpRequest) -> HttpResponse:
 @require_http_methods(["GET"])
 def my_list(request: HttpRequest) -> HttpResponse:
     watchlist = _get_queue(request)
+
+    # Check if request wants JSON response
+    if request.headers.get('Accept', '').find('application/json') != -1:
+        return JsonResponse({"watchlist": watchlist})
+
     return render(request, "searchapp/queue.html", {"watchlist": watchlist})
 
 
@@ -504,6 +517,8 @@ def remove_from_list(request: HttpRequest) -> HttpResponse:
     except Exception:
         payload = {}
     if not source_alias and not job_id and not payload:
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": "Parametri mancanti per rimuovere dalla coda"}, status=400)
         messages.error(request, "Parametri mancanti per rimuovere dalla coda")
         return redirect("my_list")
 
@@ -516,6 +531,13 @@ def remove_from_list(request: HttpRequest) -> HttpResponse:
         new_q = [w for w in q if _make_queue_key(w) != key]
     _save_queue(request, new_q)
 
+    # Check if request wants JSON response
+    if request.headers.get('Accept', '').find('application/json') != -1:
+        return JsonResponse({
+            "success": True,
+            "message": "Elemento rimosso dalla coda"
+        })
+
     messages.success(request, "Elemento rimosso dalla coda")
     return redirect("my_list")
 
@@ -524,6 +546,8 @@ def remove_from_list(request: HttpRequest) -> HttpResponse:
 def start_download(request: HttpRequest) -> HttpResponse:
     cfg = _load_config()
     if cfg.get("WEBSITE_CONFIG", {}).get("require_login_to_download") is True and not _is_logged_in(request):
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": "Devi effettuare il login per scaricare"}, status=401)
         messages.error(request, "Devi effettuare il login per scaricare")
         login_url = reverse("login")
         next_target = request.META.get("HTTP_REFERER", reverse("search_home"))
@@ -531,6 +555,8 @@ def start_download(request: HttpRequest) -> HttpResponse:
 
     form = DownloadForm(request.POST)
     if not form.is_valid():
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": "Dati non validi"}, status=400)
         messages.error(request, "Dati non validi")
         return redirect("search_home")
 
@@ -550,6 +576,8 @@ def start_download(request: HttpRequest) -> HttpResponse:
     try:
         item_payload = json.loads(item_payload_raw)
     except Exception:
+        if request.headers.get('Accept', '').find('application/json') != -1:
+            return JsonResponse({"error": "Payload non valido"}, status=400)
         messages.error(request, "Payload non valido")
         return redirect("search_home")
 
@@ -587,6 +615,21 @@ def start_download(request: HttpRequest) -> HttpResponse:
         _save_queue(request, q)
 
     _run_download_in_thread(site, item_payload, season, episode)
+
+    # Check if request wants JSON response
+    if request.headers.get('Accept', '').find('application/json') != -1:
+        # Messaggio di successo con dettagli
+        season_info = ""
+        if site != "animeunity" and season:
+            season_info = f" (Stagione {season}"
+        episode_info = f", Episodi {episode}" if episode else ""
+        season_info += ")" if season_info and not episode_info == "" else ""
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Download avviato per '{title}'{season_info}{episode_info}. "
+                      f"Il download sta procedendo in background."
+        })
 
     # Messaggio di successo con dettagli
     season_info = ""
