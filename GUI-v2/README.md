@@ -5,58 +5,70 @@ Un'applicazione React frontend con backend Django per la ricerca e download di c
 ## 🚀 Avvio Rapido
 
 ### Prerequisiti
-
 - Python 3.8+
 - Node.js 16+
 - pip per Python
 
 ### Installazione Completa
 
-```bash
-# Installa tutte le dipendenze (frontend + backend)
-npm run install:all
+1. **Installa dipendenze:**
+   ```bash
+   # Installa Node.js dependencies
+   npm install
 
-# Configura il database Django
-npm run backend:setup
+   # Installa Python dependencies
+   cd backend && pip install -r requirements.txt && cd ..
+   ```
 
-# Avvia entrambi i servizi
-npm run dev:full
-```
+2. **Configura database:**
+   ```bash
+   cd backend && python manage.py migrate && cd ..
+   ```
 
-### Avvio Separato
+3. **Avvia servizi:**
+   ```bash
+   # Avvia entrambi i servizi (consigliato)
+   npm run dev:full
 
-#### Backend Django (Porta 8000)
+   # Oppure avvia separatamente:
+   npm run backend:dev  # Django su http://localhost:8000
+   npm run dev          # React su http://localhost:5173
+   ```
 
-```bash
-npm run backend:dev
-```
-
-#### Frontend React (Porta 5173)
-
-```bash
-npm run dev
+### Script di Avvio Rapido (Windows)
+```cmd
+start.bat install    # Installa tutto
+start.bat setup      # Configura database
+start.bat dev        # Avvia entrambi i servizi
 ```
 
 ## 📁 Struttura Progetto
 
-```bash
+```
 GUI-v2/
-├── backend/                 # Backend Django
+├── backend/                 # Backend Django API
 │   ├── manage.py           # Entry point Django
 │   ├── requirements.txt    # Dipendenze Python
 │   ├── config.json         # Configurazione StreamingCommunity
 │   ├── searchapp/          # App Django principale
-│   └── webgui/             # Configurazione Django
+│   │   ├── views.py        # API views con supporto JSON
+│   │   ├── urls.py         # URL patterns
+│   │   ├── forms.py        # Django forms
+│   │   └── models.py       # Database models
+│   └── webgui/             # Configurazione Django + CORS
 ├── src/                    # Frontend React
 │   ├── components/         # Componenti React
 │   ├── pages/             # Pagine React
-│   ├── api/               # API calls
+│   ├── api/               # API calls al backend
 │   └── types/             # TypeScript types
-├── package.json           # Dipendenze e script
-└── vite.config.ts         # Configurazione Vite
+├── package.json           # Dipendenze e script Node.js
+├── vite.config.ts         # Configurazione Vite con proxy API
+└── start.bat             # Script di avvio Windows
 ```
 
 ## 🔧 API Endpoints
+
+Tutti gli endpoint supportano sia form che JSON:
 
 - `POST /api/search/` - Cerca contenuti
 - `POST /api/download/` - Avvia download
@@ -66,17 +78,53 @@ GUI-v2/
 
 ## 🎯 Funzionalità
 
-- ✅ Ricerca contenuti multi-sito
-- ✅ Download con selezione episodio per serie TV
-- ✅ Gestione watchlist
-- ✅ Autenticazione utenti
-- ✅ UI moderna con Tailwind CSS
-- ✅ API RESTful JSON
+- ✅ **Ricerca contenuti** multi-sito (AnimeUnity, StreamingCommunity)
+- ✅ **Download con selezione episodio** per serie TV
+- ✅ **Gestione watchlist** con aggiunta/rimozione
+- ✅ **Autenticazione utenti** con sessioni
+- ✅ **UI moderna** con Tailwind CSS
+- ✅ **API RESTful** con supporto JSON
+- ✅ **CORS configurato** per sviluppo locale
+- ✅ **Proxy Vite** per sviluppo semplificato
 
 ## 🛠 Script Disponibili
 
-- `npm run dev` - Avvia frontend React
-- `npm run backend:dev` - Avvia backend Django
+### Frontend (React)
+- `npm run dev` - Avvia frontend React (porta 5173)
+- `npm run build` - Build per produzione
+- `npm run preview` - Preview build locale
+
+### Backend (Django)
+- `npm run backend:install` - Installa dipendenze Python
+- `npm run backend:migrate` - Esegue migrazioni database
+- `npm run backend:dev` - Avvia Django (porta 8000)
+- `npm run backend:setup` - Setup completo backend
+
+### Full Stack
+- `npm run install:all` - Installa tutto (frontend + backend)
 - `npm run dev:full` - Avvia entrambi i servizi
-- `npm run backend:setup` - Installa e migra database
-- `npm run build` - Build frontend per produzione
+- `start.bat dev` - Script Windows per avvio completo
+
+## 🌐 URL di Sviluppo
+
+- **Frontend React:** http://localhost:5173
+- **Backend Django:** http://localhost:8000
+- **API:** http://localhost:8000/api/*
+
+## 🔒 Configurazione
+
+- **Database:** SQLite (file: `backend/db.sqlite3`)
+- **Configurazione:** `backend/config.json`
+- **Utenti:** Admin/admin, Test/tester
+- **CORS:** Configurato per localhost:5173
+
+## 📝 Note
+
+- Il backend supporta sia template HTML che risposte JSON
+- Il frontend usa proxy Vite per le chiamate API in sviluppo
+- Database e configurazioni sono preservate nella migrazione
+- CORS è configurato per lo sviluppo locale
+
+---
+
+**✨ Il progetto è ora completamente unificato con frontend React e backend Django in un'unica codebase!**

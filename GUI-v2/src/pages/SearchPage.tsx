@@ -11,6 +11,7 @@ type SearchResult = MediaItem & {
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
+  const [searchSite, setSearchSite] = useState("animeunity");
   const [server, setServer] = useState("Server 1");
   const [currentPage, setCurrentPage] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
@@ -38,7 +39,7 @@ export default function SearchPage() {
     setIsLoading(true);
     try {
       const searchRequest: SearchRequest = {
-        site: server.toLowerCase().replace(" ", ""),
+        site: searchSite,
         query: query.trim(),
       };
 
@@ -134,8 +135,14 @@ export default function SearchPage() {
     }
   };
 
-  return (
-    <div className="max-w-6xl mx-auto">
+  const handleReset = () => {
+    setQuery("");
+    setSearchSite("animeunity");
+    setServer("Server 1");
+    setCurrentPage(1);
+    setHasSearched(false);
+    setSearchResults([]);
+  };
       <WIP />
 
       {/* Episode Selector Modal */}
@@ -231,6 +238,40 @@ export default function SearchPage() {
 
           {/* Filters */}
           <div className="flex flex-col gap-4 p-4">
+            {/* Search Site Selection */}
+            <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <label className="text-white text-base font-medium leading-normal">
+                  Sito di ricerca
+                </label>
+                <div className="relative">
+                  <select
+                    value={searchSite}
+                    onChange={(e) => setSearchSite(e.target.value)}
+                    className="appearance-none h-10 w-48 cursor-pointer rounded-lg bg-gray-800 pl-4 pr-10 text-white text-sm font-medium leading-normal focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  >
+                    <option value="animeunity">AnimeUnity</option>
+                    <option value="streamingcommunity">StreamingCommunity</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Server and Reset */}
             <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
@@ -264,6 +305,15 @@ export default function SearchPage() {
                   </div>
                 </div>
               </div>
+              <button
+                onClick={handleReset}
+                className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Reset Filtri
+              </button>
             </div>
           </div>
 
