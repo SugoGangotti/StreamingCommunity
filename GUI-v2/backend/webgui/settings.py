@@ -76,6 +76,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split()
 
+# Add CSRF exemption for API endpoints
+CSRF_EXEMPT_URLS = [
+    '/api/',
+]
+
+# Context processor to add CSRF token to all templates
+def csrf_token_context(request):
+    from django.middleware.csrf import get_token
+    return {
+        'csrf_token': get_token(request),
+    }
+
 # CORS settings
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [

@@ -24,14 +24,13 @@ export interface RemoveFromListRequest {
 export async function searchMedia(request: SearchRequest): Promise<MediaItem[]> {
   try {
     const formData = new FormData();
-    formData.append("csrfmiddlewaretoken", getCsrfToken());
     formData.append("site", request.site);
     formData.append("query", request.query);
 
     const response = await fetch(`${API_BASE_URL}/search/`, {
       method: "POST",
       body: formData,
-      credentials: "include", // Include cookies for CSRF
+      credentials: "include", // Include cookies for session management
       headers: {
         'Accept': 'application/json',
       },
@@ -53,7 +52,6 @@ export async function searchMedia(request: SearchRequest): Promise<MediaItem[]> 
 export async function startDownload(request: DownloadRequest): Promise<{ success: boolean; message?: string }> {
   try {
     const formData = new FormData();
-    formData.append("csrfmiddlewaretoken", getCsrfToken());
     formData.append("source_alias", request.source_alias);
     formData.append("item_payload", request.item_payload);
 
@@ -86,7 +84,6 @@ export async function startDownload(request: DownloadRequest): Promise<{ success
 export async function removeFromList(request: RemoveFromListRequest): Promise<{ success: boolean; message?: string }> {
   try {
     const formData = new FormData();
-    formData.append("csrfmiddlewaretoken", getCsrfToken());
     formData.append("source_alias", request.source_alias);
     formData.append("item_payload", request.item_payload);
 
@@ -110,22 +107,6 @@ export async function removeFromList(request: RemoveFromListRequest): Promise<{ 
     console.error("Remove from list error:", error);
     return { success: false, message: error instanceof Error ? error.message : "Unknown error" };
   }
-}
-
-// Get CSRF token from cookies or meta tag
-function getCsrfToken(): string {
-  // Try to get from cookies first
-  const cookies = document.cookie.split(';');
-  for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
-    if (name === 'csrftoken') {
-      return value;
-    }
-  }
-
-  // Fallback to meta tag
-  const metaTag = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement;
-  return metaTag?.content || '';
 }
 
 // Get watchlist

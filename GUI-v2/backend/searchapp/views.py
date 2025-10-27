@@ -5,13 +5,13 @@ import os
 import uuid
 from typing import Any, Dict, List, Optional
 from datetime import datetime
-
-from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SearchForm, DownloadForm
 
@@ -26,7 +26,7 @@ def _load_config() -> Dict[str, Any]:
         return {}
 
 
-def _is_logged_in(request: HttpRequest) -> bool:
+def _is_logged_in(request) -> bool:
     return bool(request.session.get("auth_user"))
 
 
@@ -169,14 +169,15 @@ def _search_results_to_list(
 
 
 @require_http_methods(["GET"])
-def search_home(request: HttpRequest) -> HttpResponse:
+def search_home(request) -> HttpResponse:
     form = SearchForm()
     watchlist = request.session.get("watchlist", [])
     return render(request, "searchapp/home.html", {"form": form, "watchlist": watchlist})
 
 
 @require_http_methods(["POST"])
-def search(request: HttpRequest) -> HttpResponse:
+@csrf_exempt
+def search(request) -> HttpResponse:
     form = SearchForm(request.POST)
     if not form.is_valid():
         if request.headers.get('Accept', '').find('application/json') != -1:
@@ -242,7 +243,8 @@ def _run_download_in_thread(
 
 
 @require_http_methods(["POST"])
-def series_metadata(request: HttpRequest) -> JsonResponse:
+@csrf_exempt
+def series_metadata(request) -> JsonResponse:
     try:
         # Expect either JSON body or standard form fields
         if request.content_type and "application/json" in request.content_type:
@@ -439,16 +441,16 @@ def _normalize_item_for_display(item_dict: Dict[str, Any], source_alias: str) ->
     return item
 
 
-def _queue_key(request: HttpRequest) -> str:
+def _queue_key(request) -> str:
     user = request.session.get("auth_user") or "anon"
     return f"queue:{user}"
 
 
-def _get_queue(request: HttpRequest) -> List[Dict[str, Any]]:
+def _get_queue(request) -> List[Dict[str, Any]]:
     return list(request.session.get(_queue_key(request), []))
 
 
-def _save_queue(request: HttpRequest, queue_items: List[Dict[str, Any]]) -> None:
+def _save_queue(request, queue_items: List[Dict[str, Any]]) -> None:
     request.session[_queue_key(request)] = queue_items
     request.session.modified = True
 
@@ -463,7 +465,7 @@ def _make_queue_key(item: Dict[str, Any]) -> str:
     )
 
 
-def _watchlist_add(request: HttpRequest, item: Dict[str, Any]) -> None:
+def _watchlist_add(request, item: Dict[str, Any]) -> None:
     q = _get_queue(request)
     key = _make_queue_key(item)
     if any(_make_queue_key(w) == key for w in q):
@@ -477,7 +479,8 @@ def _watchlist_add(request: HttpRequest, item: Dict[str, Any]) -> None:
 
 
 @require_http_methods(["POST"])
-def add_to_list(request: HttpRequest) -> HttpResponse:
+@csrf_exempt
+def add_to_list(request) -> HttpResponse:
     source_alias = request.POST.get("source_alias") or ""
     item_payload_raw = request.POST.get("item_payload") or ""
     if not source_alias or not item_payload_raw:
@@ -497,7 +500,7 @@ def add_to_list(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
-def my_list(request: HttpRequest) -> HttpResponse:
+def my_list(request) -> HttpResponse:
     watchlist = _get_queue(request)
 
     # Check if request wants JSON response
@@ -508,7 +511,8 @@ def my_list(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["POST"])
-def remove_from_list(request: HttpRequest) -> HttpResponse:
+@csrf_exempt
+def remove_from_list(request) -> HttpResponse:
     source_alias = request.POST.get("source_alias") or ""
     item_payload_raw = request.POST.get("item_payload") or ""
     job_id = request.POST.get("job_id") or ""
@@ -543,7 +547,8 @@ def remove_from_list(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["POST"])
-def start_download(request: HttpRequest) -> HttpResponse:
+@csrf_exempt
+def start_download(request) -> HttpResponse:
     cfg = _load_config()
     if cfg.get("WEBSITE_CONFIG", {}).get("require_login_to_download") is True and not _is_logged_in(request):
         if request.headers.get('Accept', '').find('application/json') != -1:
@@ -648,7 +653,7 @@ def start_download(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["GET", "POST"])
-def login(request: HttpRequest) -> HttpResponse:
+def login(request) -> HttpResponse:
     if request.method == "GET":
         return render(request, "searchapp/login.html")
 
@@ -681,5 +686,5 @@ def login(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
-def settings(request: HttpRequest) -> HttpResponse:
+def settings(request) -> HttpResponse:
     return render(request, "searchapp/settings.html")
