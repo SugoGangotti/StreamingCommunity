@@ -1,59 +1,24 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-eggs/
-.eggs/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+node_modules
+dist
+dist-ssr
+*.local
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Translations
-*.mo
-*.pot
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-downloaded_files/
-
-# IDEs
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
 .idea
-.vscode
-.ruff_cache
-
-# Other
-Video
-note.txt
-cmd.txt
-bot_config.json
-scripts.json
-active_requests.json
-working_proxies.json
-start.sh
 .DS_Store
-GUI/db.sqlite3
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
