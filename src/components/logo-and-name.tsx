@@ -9,7 +9,7 @@ const LogoAndName = () => {
         alt="Arrowar / StreamingCommunity"
       />
       <span className="text-lg font-semibold tracking-tighter">
-        Arrowar / StreamingCommunity
+        Media | Downloader
       </span>
     </div>
   );

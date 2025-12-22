@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router";
 
-export function UserToggle() {
+export function UserToggle({ className }: { className?: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className={className}>
           <User2 className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
           <span>Profile</span>
         </Button>

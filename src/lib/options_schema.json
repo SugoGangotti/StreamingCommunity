@@ -1,0 +1,245 @@
+{
+  "version": "1.0",
+  "sections": [
+    {
+      "id": "general",
+      "label": "Generale",
+      "description": "Comportamento di base e debug dello script",
+      "settings": [
+        {
+          "id": "debug",
+          "label": "Modalità Debug",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "show_message",
+          "label": "Mostra Messaggi",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "show_trending",
+          "label": "Mostra Trending",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "fetch_domain_online",
+          "label": "Aggiorna Dominio Online",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "bypass_dns",
+          "label": "Bypass DNS",
+          "type": "boolean",
+          "default": false
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "label": "Archiviazione",
+      "description": "Gestione dei percorsi di salvataggio e nomi file",
+      "settings": [
+        {
+          "id": "root_path",
+          "label": "Percorso Root",
+          "type": "text",
+          "default": "/mnt/arrowarmedia/"
+        },
+        {
+          "id": "movie_folder_name",
+          "label": "Cartella Film",
+          "type": "text",
+          "default": "Film"
+        },
+        {
+          "id": "serie_folder_name",
+          "label": "Cartella Serie TV",
+          "type": "text",
+          "default": "SerieTV"
+        },
+        {
+          "id": "anime_folder_name",
+          "label": "Cartella Anime",
+          "type": "text",
+          "default": "Anime"
+        },
+        {
+          "id": "map_episode_name",
+          "label": "Template Nome Episodio",
+          "type": "text",
+          "default": "E%(episode)_%(episode_name)"
+        },
+        {
+          "id": "add_siteName",
+          "label": "Includi Nome Sito",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "cleanup_tmp_folder",
+          "label": "Pulisci File Temporanei",
+          "type": "boolean",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "downloader",
+      "label": "Motore Download",
+      "description": "Parametri per l'estrazione e il download M3U8",
+      "settings": [
+        {
+          "id": "default_video_workers",
+          "label": "Worker Video",
+          "type": "number",
+          "default": 8,
+          "validation": { "min": 1, "max": 32 }
+        },
+        {
+          "id": "default_audio_workers",
+          "label": "Worker Audio",
+          "type": "number",
+          "default": 8,
+          "validation": { "min": 1, "max": 32 }
+        },
+        {
+          "id": "segment_timeout",
+          "label": "Timeout Segmenti (s)",
+          "type": "number",
+          "default": 8
+        },
+        {
+          "id": "enable_retry",
+          "label": "Riprova in caso di errore",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "specific_list_audio",
+          "label": "Lingue Audio Preferite",
+          "type": "list",
+          "default": ["ita", "eng"]
+        },
+        {
+          "id": "get_only_link",
+          "label": "Ottieni solo il link (no download)",
+          "type": "boolean",
+          "default": false
+        }
+      ]
+    },
+    {
+      "id": "conversion",
+      "label": "Conversione Video",
+      "description": "Impostazioni FFmpeg per il post-processing",
+      "settings": [
+        {
+          "id": "use_gpu",
+          "label": "Usa Accelerazione GPU",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "force_resolution",
+          "label": "Risoluzione Forzata",
+          "type": "select",
+          "options": ["Best", "1080p", "720p", "480p"],
+          "default": "Best"
+        },
+        {
+          "id": "extension",
+          "label": "Formato Finale",
+          "type": "select",
+          "options": [".mp4", ".mkv", ".ts"],
+          "default": ".mp4"
+        },
+        {
+          "id": "default_preset",
+          "label": "Preset Velocità (FFmpeg)",
+          "type": "select",
+          "options": [
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "fast",
+            "medium",
+            "slow"
+          ],
+          "default": "ultrafast"
+        },
+        {
+          "id": "use_codec",
+          "label": "Usa Codec Specifici",
+          "type": "boolean",
+          "default": false
+        }
+      ]
+    },
+    {
+      "id": "external_services",
+      "label": "Servizi Esterni",
+      "description": "Integrazioni con qBitTorrent, Telegram e Login",
+      "settings": [
+        {
+          "id": "telegram_bot",
+          "label": "Abilita Bot Telegram",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "qbit_host",
+          "label": "IP qBitTorrent",
+          "type": "text",
+          "default": "192.168.1.51"
+        },
+        {
+          "id": "qbit_port",
+          "label": "Porta qBitTorrent",
+          "type": "text",
+          "default": "6666"
+        },
+        {
+          "id": "qbit_user",
+          "label": "User qBitTorrent",
+          "type": "text",
+          "default": "admin"
+        },
+        {
+          "id": "qbit_pass",
+          "label": "Pass qBitTorrent",
+          "type": "password",
+          "default": "adminadmin"
+        }
+      ]
+    },
+    {
+      "id": "network",
+      "label": "Rete e Timeout",
+      "description": "Gestione delle richieste HTTP",
+      "settings": [
+        {
+          "id": "verify",
+          "label": "Verifica Certificati SSL",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "timeout",
+          "label": "Timeout Richieste (s)",
+          "type": "number",
+          "default": 20
+        },
+        {
+          "id": "max_retry",
+          "label": "Tentativi Massimi",
+          "type": "number",
+          "default": 8
+        }
+      ]
+    }
+  ]
+}

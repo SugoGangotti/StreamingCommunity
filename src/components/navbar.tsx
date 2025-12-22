@@ -22,7 +22,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -31,6 +34,7 @@ import { LogoAndName } from "./logo-and-name";
 import { ModeToggle } from "./mode-toggle";
 import { Link } from "react-router-dom";
 import { UserToggle } from "./user-toggle";
+import { routes } from "@/routes/routes";
 
 interface NavbarProps {
   className?: string;
@@ -74,14 +78,28 @@ const Navbar = ({ className }: NavbarProps) => {
     <section className={cn("py-6 px-18", className)}>
       <nav
         className={cn(
-          "flex flex-row justify-between w-full p-4",
-          "bg-blue-700/30",
-          "border-4 border-blue-700/30 rounded-2xl"
+          "flex flex-row justify-between w-full p-4 bg-muted",
+          "bg-blue-900/80 backdrop-blur-sm",
+          "border-4 border-blue-800 rounded-2xl"
         )}
       >
         <LogoAndName />
         <NavigationMenu className="hidden lg:block w-full">
           <NavigationMenuList>
+            {routes
+              .filter((route) => route.showInNavbar)
+              .map((route, index) => (
+                <NavigationMenuItem key={index}>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to={route.path}
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      {route.title}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
             <NavigationMenuItem>
               <NavigationMenuTrigger>Features</NavigationMenuTrigger>
               <NavigationMenuContent>
@@ -107,45 +125,36 @@ const Navbar = ({ className }: NavbarProps) => {
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to="/login" className={navigationMenuTriggerStyle()}>
-                  Login
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to="/" className={navigationMenuTriggerStyle()}>
-                  Home
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to="/contact" className={navigationMenuTriggerStyle()}>
-                  Contact
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex gap-3 w-full justify-end">
-          <UserToggle />
-          <ModeToggle />
+        <div className="flex gap-3 md:w-full justify-end">
+          <UserToggle className="hidden md:inline-flex" />
+          <ModeToggle className="hidden md:inline-flex" />
+
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
               <Button variant="outline" size="icon">
                 <MenuIcon className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="max-h-screen overflow-auto">
-              <SheetHeader>
-                <SheetTitle>
-                  <LogoAndName />
-                </SheetTitle>
+
+            <SheetContent
+              side="right"
+              className="max-h-screen overflow-auto"
+              closeButton={false}
+            >
+              <SheetHeader className="flex flex-row">
+                <div className="w-full h-full flex flex-col justify-between">
+                  <SheetTitle className="w-full">Menu</SheetTitle>
+                  <SheetDescription className="w-full">
+                    Version 1.0
+                  </SheetDescription>
+                </div>
+
+                <ModeToggle size={"default"} className="h-full p-3" />
               </SheetHeader>
+
               <div className="flex flex-col p-4">
                 <Accordion type="single" collapsible className="mt-4 mb-2">
                   <AccordionItem value="solutions" className="border-none">
@@ -174,18 +183,23 @@ const Navbar = ({ className }: NavbarProps) => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
+
                 <div className="flex flex-col gap-6">
-                  <Link to="/templates" className="font-medium">
-                    Templates
-                  </Link>
-                  <Link to="/blog" className="font-medium">
-                    Blog
-                  </Link>
-                  <Link to="/pricing" className="font-medium">
-                    Pricing
-                  </Link>
+                  {routes
+                    .filter((route) => route.showInNavbar)
+                    .map((route, index) => (
+                      <Link key={index} to={route.path} className="font-medium">
+                        {route.title}
+                      </Link>
+                    ))}
                 </div>
               </div>
+
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button>Chiudi</Button>
+                </SheetClose>
+              </SheetFooter>
             </SheetContent>
           </Sheet>
         </div>
