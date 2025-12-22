@@ -1,12 +1,7 @@
-import { PageTemplate } from "./components/page-template";
-import { Homepage } from "./pages/homepage";
+import { AppRouter } from "./routes/router";
 
 function App() {
-  return (
-    <PageTemplate className="w-screen h-screen">
-      <Homepage />
-    </PageTemplate>
-  );
+  return <AppRouter />;
 }
 
 export default App;

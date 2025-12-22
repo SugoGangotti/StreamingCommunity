@@ -28,171 +28,167 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { LogoAndName } from "./logo-and-name";
+import { ModeToggle } from "./mode-toggle";
+import { Link } from "react-router-dom";
+import { UserToggle } from "./user-toggle";
 
 interface NavbarProps {
   className?: string;
 }
 
 const Navbar = ({ className }: NavbarProps) => {
-  const features = [
+  const settings = [
     {
       title: "Dashboard",
       description: "Overview of your activity",
-      href: "#",
+      href: "/dashboard",
     },
     {
       title: "Analytics",
       description: "Track your performance",
-      href: "#",
+      href: "/analytics",
     },
     {
       title: "Settings",
       description: "Configure your preferences",
-      href: "#",
+      href: "/settings",
     },
     {
       title: "Integrations",
       description: "Connect with other tools",
-      href: "#",
+      href: "/integrations",
     },
     {
       title: "Storage",
       description: "Manage your files",
-      href: "#",
+      href: "/storage",
     },
     {
       title: "Support",
       description: "Get help when needed",
-      href: "#",
+      href: "/support",
     },
   ];
 
   return (
-    <section className={cn("py-8 px-22", className)}>
-      <nav className="flex flex-row justify-between w-full">
+    <section className={cn("py-6 px-18", className)}>
+      <nav
+        className={cn(
+          "flex flex-row justify-between w-full p-4",
+          "bg-blue-700/30",
+          "border-4 border-blue-700/30 rounded-2xl"
+        )}
+      >
         <LogoAndName />
-        <NavigationMenu className="hidden lg:block">
+        <NavigationMenu className="hidden lg:block w-full">
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger>Features</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className="grid w-[600px] grid-cols-2 p-3">
-                  {features.map((feature, index) => (
-                    <NavigationMenuLink
-                      href={feature.href}
-                      key={index}
-                      className="rounded-md p-3 transition-colors hover:bg-muted/70"
-                    >
-                      <div key={feature.title}>
-                        <p className="mb-1 font-semibold text-foreground">
-                          {feature.title}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {feature.description}
-                        </p>
-                      </div>
+                  {settings.map((feature, index) => (
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={feature.href}
+                        key={index}
+                        className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                      >
+                        <div key={feature.title}>
+                          <p className="mb-1 font-semibold text-foreground">
+                            {feature.title}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {feature.description}
+                          </p>
+                        </div>
+                      </Link>
                     </NavigationMenuLink>
                   ))}
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink
-                href="#"
-                className={navigationMenuTriggerStyle()}
-              >
-                Products
+              <NavigationMenuLink asChild>
+                <Link to="/login" className={navigationMenuTriggerStyle()}>
+                  Login
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink
-                href="#"
-                className={navigationMenuTriggerStyle()}
-              >
-                Resources
+              <NavigationMenuLink asChild>
+                <Link to="/" className={navigationMenuTriggerStyle()}>
+                  Home
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink
-                href="#"
-                className={navigationMenuTriggerStyle()}
-              >
-                Contact
+              <NavigationMenuLink asChild>
+                <Link to="/contact" className={navigationMenuTriggerStyle()}>
+                  Contact
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="hidden items-center gap-4 lg:flex">
-          <Button variant="outline">Sign in</Button>
-          <Button>Start for free</Button>
-        </div>
-        <Sheet>
-          <SheetTrigger asChild className="lg:hidden">
-            <Button variant="outline" size="icon">
-              <MenuIcon className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="top" className="max-h-screen overflow-auto">
-            <SheetHeader>
-              <SheetTitle>
-                <div className="flex items-center gap-2">
-                  <img
-                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
-                    className="max-h-8"
-                    alt="Shadcn UI Navbar"
-                  />
-                  <span className="text-lg font-semibold tracking-tighter">
-                    Shadcnblocks.com
-                  </span>
+
+        <div className="flex gap-3 w-full justify-end">
+          <UserToggle />
+          <ModeToggle />
+          <Sheet>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="outline" size="icon">
+                <MenuIcon className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="max-h-screen overflow-auto">
+              <SheetHeader>
+                <SheetTitle>
+                  <LogoAndName />
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col p-4">
+                <Accordion type="single" collapsible className="mt-4 mb-2">
+                  <AccordionItem value="solutions" className="border-none">
+                    <AccordionTrigger className="text-base hover:no-underline">
+                      Features
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid md:grid-cols-2">
+                        {settings.map((feature, index) => (
+                          <Link
+                            to={feature.href}
+                            key={index}
+                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                          >
+                            <div key={feature.title}>
+                              <p className="mb-1 font-semibold text-foreground">
+                                {feature.title}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {feature.description}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                <div className="flex flex-col gap-6">
+                  <Link to="/templates" className="font-medium">
+                    Templates
+                  </Link>
+                  <Link to="/blog" className="font-medium">
+                    Blog
+                  </Link>
+                  <Link to="/pricing" className="font-medium">
+                    Pricing
+                  </Link>
                 </div>
-              </SheetTitle>
-            </SheetHeader>
-            <div className="flex flex-col p-4">
-              <Accordion type="single" collapsible className="mt-4 mb-2">
-                <AccordionItem value="solutions" className="border-none">
-                  <AccordionTrigger className="text-base hover:no-underline">
-                    Features
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="grid md:grid-cols-2">
-                      {features.map((feature, index) => (
-                        <a
-                          href={feature.href}
-                          key={index}
-                          className="rounded-md p-3 transition-colors hover:bg-muted/70"
-                        >
-                          <div key={feature.title}>
-                            <p className="mb-1 font-semibold text-foreground">
-                              {feature.title}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {feature.description}
-                            </p>
-                          </div>
-                        </a>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-              <div className="flex flex-col gap-6">
-                <a href="#" className="font-medium">
-                  Templates
-                </a>
-                <a href="#" className="font-medium">
-                  Blog
-                </a>
-                <a href="#" className="font-medium">
-                  Pricing
-                </a>
               </div>
-              <div className="mt-6 flex flex-col gap-4">
-                <Button variant="outline">Sign in</Button>
-                <Button>Start for free</Button>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </nav>
     </section>
   );
