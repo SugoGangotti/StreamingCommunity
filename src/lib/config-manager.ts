@@ -81,13 +81,9 @@ export const mapSettingsToConfig = (
   return {
     DEFAULT: {
       debug: settings.debug || false,
-      show_message:
-        settings.show_message !== undefined ? settings.show_message : true,
+      show_message: settings.show_message || false,
       show_trending: settings.show_trending || false,
-      fetch_domain_online:
-        settings.fetch_domain_online !== undefined
-          ? settings.fetch_domain_online
-          : true,
+      fetch_domain_online: settings.fetch_domain_online || true,
       telegram_bot: settings.telegram_bot || false,
       bypass_dns: settings.bypass_dns || false,
     },
@@ -99,10 +95,7 @@ export const mapSettingsToConfig = (
       map_episode_name:
         settings.map_episode_name || "E%(episode)_%(episode_name)",
       add_siteName: settings.add_siteName || false,
-      cleanup_tmp_folder:
-        settings.cleanup_tmp_folder !== undefined
-          ? settings.cleanup_tmp_folder
-          : true,
+      cleanup_tmp_folder: settings.cleanup_tmp_folder || false,
     },
     QBIT_CONFIG: {
       host: settings.qbit_host || "192.168.1.51",
@@ -117,27 +110,32 @@ export const mapSettingsToConfig = (
       enable_retry:
         settings.enable_retry !== undefined ? settings.enable_retry : true,
       specific_list_audio: settings.specific_list_audio || ["ita", "eng"],
-      download_subtitle: false, // Default value as not in UI
-      merge_subs: false, // Default value as not in UI
-      specific_list_subtitles: [], // Default value as not in UI
-      limit_segment: 0, // Default value as not in UI
-      cleanup_tmp_folder:
-        settings.cleanup_tmp_folder !== undefined
-          ? settings.cleanup_tmp_folder
-          : true,
+      download_subtitle: settings.download_subtitle || false,
+      merge_subs: settings.merge_subs || false,
+      specific_list_subtitles: settings.specific_list_subtitles || [],
+      limit_segment: settings.limit_segment || 0,
+      cleanup_tmp_folder: settings.cleanup_tmp_folder_download || false,
       get_only_link: settings.get_only_link || false,
     },
     M3U8_CONVERSION: {
       use_codec: settings.use_codec || false,
-      use_vcodec: true, // Default value as not in UI
-      use_acodec: true, // Default value as not in UI
-      use_bitrate: true, // Default value as not in UI
+      use_vcodec: settings.use_vcodec || true,
+      use_acodec: settings.use_acodec || true,
+      use_bitrate: settings.use_bitrate || true,
       use_gpu: settings.use_gpu || false,
       default_preset: settings.default_preset || "ultrafast",
-      param_video: ["-c:v", "libx265", "-crf", "28", "-preset", "medium"], // Default value
-      param_audio: ["-c:a", "libopus", "-b:a", "128k"], // Default value
-      param_subtitles: ["-c:s", "webvtt"], // Default value
-      param_final: ["-c", "copy"], // Default value
+      param_video: settings.param_video
+        ? settings.param_video.split(" ")
+        : ["-c:v", "libx265", "-crf", "28", "-preset", "medium"],
+      param_audio: settings.param_audio
+        ? settings.param_audio.split(" ")
+        : ["-c:a", "libopus", "-b:a", "128k"],
+      param_subtitles: settings.param_subtitles
+        ? settings.param_subtitles.split(" ")
+        : ["-c:s", "webvtt"],
+      param_final: settings.param_final
+        ? settings.param_final.split(" ")
+        : ["-c", "copy"],
       force_resolution: settings.force_resolution || "Best",
       extension: settings.extension || ".mp4",
     },
@@ -147,13 +145,13 @@ export const mapSettingsToConfig = (
       max_retry: settings.max_retry || 8,
     },
     HOOKS: {
-      pre_run: [], // Default value
-      post_run: [], // Default value
+      pre_run: settings.pre_run ? [settings.pre_run] : [],
+      post_run: settings.post_run ? [settings.post_run] : [],
     },
     SITE_LOGIN: {
       crunchyroll: {
-        etp_rt: "", // Default value - would need to be added to UI if needed
-        x_cr_tab_id: "", // Default value - would need to be added to UI if needed
+        etp_rt: settings.crunchyroll_etp_rt || "",
+        x_cr_tab_id: settings.crunchyroll_x_cr_tab_id || "",
       },
     },
   };

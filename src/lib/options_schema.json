@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "3.78",
   "sections": [
     {
       "id": "general",
@@ -129,6 +129,36 @@
           "label": "Ottieni solo il link (no download)",
           "type": "boolean",
           "default": false
+        },
+        {
+          "id": "download_subtitle",
+          "label": "Download Sottotitoli",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "merge_subs",
+          "label": "Unisci Sottotitoli",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "id": "specific_list_subtitles",
+          "label": "Lingue Sottotitoli Preferite",
+          "type": "list",
+          "default": []
+        },
+        {
+          "id": "limit_segment",
+          "label": "Limite Segmenti",
+          "type": "number",
+          "default": 0
+        },
+        {
+          "id": "cleanup_tmp_folder_download",
+          "label": "Pulisci File Temporanei Download",
+          "type": "boolean",
+          "default": true
         }
       ]
     },
@@ -176,6 +206,48 @@
           "label": "Usa Codec Specifici",
           "type": "boolean",
           "default": false
+        },
+        {
+          "id": "use_vcodec",
+          "label": "Usa Codec Video",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "use_acodec",
+          "label": "Usa Codec Audio",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "use_bitrate",
+          "label": "Usa Bitrate Specifico",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "param_video",
+          "label": "Parametri Video FFmpeg",
+          "type": "text",
+          "default": "-c:v libx265 -crf 28 -preset medium"
+        },
+        {
+          "id": "param_audio",
+          "label": "Parametri Audio FFmpeg",
+          "type": "text",
+          "default": "-c:a libopus -b:a 128k"
+        },
+        {
+          "id": "param_subtitles",
+          "label": "Parametri Sottotitoli FFmpeg",
+          "type": "text",
+          "default": "-c:s webvtt"
+        },
+        {
+          "id": "param_final",
+          "label": "Parametri Finali FFmpeg",
+          "type": "text",
+          "default": "-c copy"
         }
       ]
     },
@@ -238,6 +310,44 @@
           "label": "Tentativi Massimi",
           "type": "number",
           "default": 8
+        }
+      ]
+    },
+    {
+      "id": "hooks",
+      "label": "Script Personalizzati",
+      "description": "Esegui script prima e dopo il download",
+      "settings": [
+        {
+          "id": "pre_run",
+          "label": "Script Pre-Download",
+          "type": "text",
+          "default": ""
+        },
+        {
+          "id": "post_run",
+          "label": "Script Post-Download",
+          "type": "text",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "id": "site_login",
+      "label": "Credenziali Siti",
+      "description": "Configurazione login per siti specifici",
+      "settings": [
+        {
+          "id": "crunchyroll_etp_rt",
+          "label": "Crunchyroll ETP_RT",
+          "type": "text",
+          "default": ""
+        },
+        {
+          "id": "crunchyroll_x_cr_tab_id",
+          "label": "Crunchyroll X-CR-TAB-ID",
+          "type": "text",
+          "default": ""
         }
       ]
     }
