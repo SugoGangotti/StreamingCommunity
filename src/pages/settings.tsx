@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import optionsSchema from "@/lib/options_schema.json";
 import { updateConfigFile } from "@/lib/config-manager";
+import { Switch } from "@/components/ui/switch";
+import { loadSettings } from "@/scripts/loadSettings";
+import { debugLog, setDebugMode } from "@/scripts/debug";
 
 interface SettingsState {
   [key: string]: any;
@@ -12,125 +15,7 @@ const Settings = () => {
 
   // Initialize settings with default values from schema
   useEffect(() => {
-    const defaultSettings: SettingsState = {};
-    optionsSchema.sections.forEach((section) => {
-      section.settings.forEach((setting) => {
-        defaultSettings[setting.id] = setting.default;
-      });
-    });
-
-    // Try to load settings from config.json first, then fallback to localStorage
-    const loadSettings = async () => {
-      try {
-        // Try to get settings from config.json via API
-        const response = await fetch("http://localhost:3001/api/config");
-        if (response.ok) {
-          const configData = await response.json();
-          // Map config.json to UI settings format
-          const mappedSettings = {
-            debug: configData.DEFAULT?.debug || defaultSettings.debug,
-            show_message:
-              configData.DEFAULT?.show_message || defaultSettings.show_message,
-            show_trending:
-              configData.DEFAULT?.show_trending ||
-              defaultSettings.show_trending,
-            fetch_domain_online:
-              configData.DEFAULT?.fetch_domain_online ||
-              defaultSettings.fetch_domain_online,
-            telegram_bot:
-              configData.DEFAULT?.telegram_bot || defaultSettings.telegram_bot,
-            bypass_dns:
-              configData.DEFAULT?.bypass_dns || defaultSettings.bypass_dns,
-            root_path:
-              configData.OUT_FOLDER?.root_path || defaultSettings.root_path,
-            movie_folder_name:
-              configData.OUT_FOLDER?.movie_folder_name ||
-              defaultSettings.movie_folder_name,
-            serie_folder_name:
-              configData.OUT_FOLDER?.serie_folder_name ||
-              defaultSettings.serie_folder_name,
-            anime_folder_name:
-              configData.OUT_FOLDER?.anime_folder_name ||
-              defaultSettings.anime_folder_name,
-            map_episode_name:
-              configData.OUT_FOLDER?.map_episode_name ||
-              defaultSettings.map_episode_name,
-            add_siteName:
-              configData.OUT_FOLDER?.add_siteName ||
-              defaultSettings.add_siteName,
-            cleanup_tmp_folder:
-              configData.OUT_FOLDER?.cleanup_tmp_folder ||
-              defaultSettings.cleanup_tmp_folder,
-            default_video_workers:
-              configData.M3U8_DOWNLOAD?.default_video_workers ||
-              defaultSettings.default_video_workers,
-            default_audio_workers:
-              configData.M3U8_DOWNLOAD?.default_audio_workers ||
-              defaultSettings.default_audio_workers,
-            segment_timeout:
-              configData.M3U8_DOWNLOAD?.segment_timeout ||
-              defaultSettings.segment_timeout,
-            enable_retry:
-              configData.M3U8_DOWNLOAD?.enable_retry ||
-              defaultSettings.enable_retry,
-            specific_list_audio:
-              configData.M3U8_DOWNLOAD?.specific_list_audio ||
-              defaultSettings.specific_list_audio,
-            get_only_link:
-              configData.M3U8_DOWNLOAD?.get_only_link ||
-              defaultSettings.get_only_link,
-            use_gpu:
-              configData.M3U8_CONVERSION?.use_gpu || defaultSettings.use_gpu,
-            force_resolution:
-              configData.M3U8_CONVERSION?.force_resolution ||
-              defaultSettings.force_resolution,
-            extension:
-              configData.M3U8_CONVERSION?.extension ||
-              defaultSettings.extension,
-            default_preset:
-              configData.M3U8_CONVERSION?.default_preset ||
-              defaultSettings.default_preset,
-            use_codec:
-              configData.M3U8_CONVERSION?.use_codec ||
-              defaultSettings.use_codec,
-            qbit_host:
-              configData.QBIT_CONFIG?.host || defaultSettings.qbit_host,
-            qbit_port:
-              configData.QBIT_CONFIG?.port || defaultSettings.qbit_port,
-            qbit_user:
-              configData.QBIT_CONFIG?.user || defaultSettings.qbit_user,
-            qbit_pass:
-              configData.QBIT_CONFIG?.pass || defaultSettings.qbit_pass,
-            verify: configData.REQUESTS?.verify || defaultSettings.verify,
-            timeout: configData.REQUESTS?.timeout || defaultSettings.timeout,
-            max_retry:
-              configData.REQUESTS?.max_retry || defaultSettings.max_retry,
-          };
-          setSettings({ ...defaultSettings, ...mappedSettings });
-          return;
-        }
-      } catch (error) {
-        console.log(
-          "Could not load from config.json, falling back to localStorage"
-        );
-      }
-
-      // Fallback to localStorage
-      const savedSettings = localStorage.getItem("appSettings");
-      if (savedSettings) {
-        try {
-          const parsed = JSON.parse(savedSettings);
-          setSettings({ ...defaultSettings, ...parsed });
-        } catch (error) {
-          console.error("Failed to parse saved settings:", error);
-          setSettings(defaultSettings);
-        }
-      } else {
-        setSettings(defaultSettings);
-      }
-    };
-
-    loadSettings();
+    loadSettings(setSettings);
   }, []);
 
   const handleSave = async () => {
@@ -158,27 +43,43 @@ const Settings = () => {
   };
 
   const updateSetting = (settingId: string, value: any) => {
-    setSettings((prev) => ({
-      ...prev,
-      [settingId]: value,
-    }));
+    debugLog(`Updating ${settingId} to:`, value);
+    setSettings((prev) => {
+      const newSettings = {
+        ...prev,
+        [settingId]: value,
+      };
+      debugLog("New settings state:", newSettings);
+
+      // Update debug mode if debug setting is changed
+      if (settingId === "debug") {
+        setDebugMode(value);
+        debugLog(`Debug mode ${value ? "enabled" : "disabled"}`);
+      }
+
+      return newSettings;
+    });
   };
 
   const renderSettingField = (setting: any) => {
-    const value = settings[setting.id] || setting.default;
+    const value =
+      settings[setting.id] !== undefined
+        ? settings[setting.id]
+        : setting.default;
+    debugLog(
+      `Rendering ${setting.id} with value: ${value}, type: ${setting.type}`
+    );
 
     switch (setting.type) {
       case "boolean":
         return (
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={value}
-              onChange={(e) => updateSetting(setting.id, e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-[#292938] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
-          </label>
+          <Switch
+            checked={value}
+            onCheckedChange={(checked) => {
+              debugLog(`Switch ${setting.id} changed to:`, checked);
+              updateSetting(setting.id, checked);
+            }}
+          />
         );
 
       case "text":
@@ -247,7 +148,7 @@ const Settings = () => {
         <div className="flex flex-wrap justify-between gap-3 p-4">
           <div className="flex min-w-72 flex-col gap-3">
             <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-              Impostazioni Account
+              Impostazioni
             </p>
             <p className="text-[#9d9db8] text-base font-normal leading-normal">
               Gestisci le tue preferenze di visualizzazione, le notifiche e le

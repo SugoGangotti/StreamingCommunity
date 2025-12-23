@@ -10,80 +10,92 @@
           "id": "debug",
           "label": "Modalità Debug",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Abilita la modalità Debug per il logging dettagliato."
         },
         {
           "id": "show_message",
           "label": "Mostra Messaggi",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Mostra i messaggi di debug e di avviso."
         },
         {
           "id": "show_trending",
           "label": "Mostra Trending",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Mostra quali contenuti sono in Trending."
         },
         {
           "id": "fetch_domain_online",
           "label": "Aggiorna Dominio Online",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Aggiorna il dominio online per il download dei file."
         },
         {
           "id": "bypass_dns",
           "label": "Bypass DNS",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Bypass DNS per il download dei file."
         }
       ]
     },
     {
       "id": "storage",
       "label": "Archiviazione",
-      "description": "Gestione dei percorsi di salvataggio e nomi file",
+      "description": "Gestione dei percorsi di salvataggio e nomi File",
       "settings": [
         {
           "id": "root_path",
           "label": "Percorso Root",
           "type": "text",
-          "default": "/mnt/arrowarmedia/"
+          "default": "/mnt/arrowarmedia/",
+          "description": "Percorso di base per il salvataggio dei File."
         },
         {
           "id": "movie_folder_name",
           "label": "Cartella Film",
           "type": "text",
-          "default": "Film"
+          "default": "Film",
+          "description": "Nome della cartella in cui salvare i Film."
         },
         {
           "id": "serie_folder_name",
           "label": "Cartella Serie TV",
           "type": "text",
-          "default": "SerieTV"
+          "default": "SerieTV",
+          "description": "Nome della cartella in cui salvare le Serie TV."
         },
         {
           "id": "anime_folder_name",
           "label": "Cartella Anime",
           "type": "text",
-          "default": "Anime"
+          "default": "Anime",
+          "description": "Nome della cartella in cui salvare gli Anime."
         },
         {
           "id": "map_episode_name",
           "label": "Template Nome Episodio",
           "type": "text",
-          "default": "E%(episode)_%(episode_name)"
+          "default": "E%(episode)_%(episode_name)",
+          "description": "Template per il nome degli episodi."
         },
         {
           "id": "add_siteName",
           "label": "Includi Nome Sito",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Includi il nome del sito nella cartella di salvataggio."
         },
         {
           "id": "cleanup_tmp_folder",
           "label": "Pulisci File Temporanei",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Pulisci i file temporanei dopo il download."
         }
       ]
     },
@@ -97,68 +109,95 @@
           "label": "Worker Video",
           "type": "number",
           "default": 8,
-          "validation": { "min": 1, "max": 32 }
+          "validation": { "min": 1, "max": 32 },
+          "description": "Numero di worker per il download dei video."
         },
         {
           "id": "default_audio_workers",
           "label": "Worker Audio",
           "type": "number",
           "default": 8,
-          "validation": { "min": 1, "max": 32 }
+          "validation": { "min": 1, "max": 32 },
+          "description": "Numero di worker per il download degli audio."
         },
         {
           "id": "segment_timeout",
           "label": "Timeout Segmenti (s)",
           "type": "number",
-          "default": 8
+          "default": 8,
+          "description": "Timeout per il download dei segmenti."
         },
         {
           "id": "enable_retry",
           "label": "Riprova in caso di errore",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Riprova in caso di errore durante il download."
         },
         {
           "id": "specific_list_audio",
           "label": "Lingue Audio Preferite",
-          "type": "list",
-          "default": ["ita", "eng"]
+          "type": "multiple-select",
+          "default": ["ita"],
+          "description": "Lingue audio preferite per il download.",
+          "extended_options": {
+            "ita": "Italiano",
+            "eng": "Inglese",
+            "spa": "Spagnolo",
+            "fra": "Francese",
+            "deu": "Tedesco",
+            "jpn": "Giapponese"
+          }
         },
         {
           "id": "get_only_link",
           "label": "Ottieni solo il link (no download)",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Ottieni solo il link (no download)."
         },
         {
           "id": "download_subtitle",
           "label": "Download Sottotitoli",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Download sottotitoli durante il download."
         },
         {
           "id": "merge_subs",
           "label": "Unisci Sottotitoli",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Unisci sottotitoli durante il download."
         },
         {
           "id": "specific_list_subtitles",
           "label": "Lingue Sottotitoli Preferite",
-          "type": "list",
-          "default": []
+          "type": "multiple-select",
+          "default": [],
+          "description": "Lingue sottotitoli preferite per il download.",
+          "extended_options": {
+            "ita": "Italiano",
+            "eng": "Inglese",
+            "spa": "Spagnolo",
+            "fra": "Francese",
+            "deu": "Tedesco",
+            "jpn": "Giapponese"
+          }
         },
         {
           "id": "limit_segment",
           "label": "Limite Segmenti",
           "type": "number",
-          "default": 0
+          "default": 0,
+          "description": "Limite segmenti durante il download."
         },
         {
           "id": "cleanup_tmp_folder_download",
           "label": "Pulisci File Temporanei Download",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Pulisci i file temporanei durante il download."
         }
       ]
     },
@@ -171,26 +210,28 @@
           "id": "use_gpu",
           "label": "Usa Accelerazione GPU",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Usa l'accelerazione GPU per la conversione video."
         },
         {
           "id": "force_resolution",
           "label": "Risoluzione Forzata",
-          "type": "select",
+          "type": "single-select",
           "options": ["Best", "1080p", "720p", "480p"],
           "default": "Best"
         },
         {
           "id": "extension",
           "label": "Formato Finale",
-          "type": "select",
+          "type": "single-select",
           "options": [".mp4", ".mkv", ".ts"],
-          "default": ".mp4"
+          "default": ".mp4",
+          "description": "Formato finale per il video convertito."
         },
         {
           "id": "default_preset",
           "label": "Preset Velocità (FFmpeg)",
-          "type": "select",
+          "type": "single-select",
           "options": [
             "ultrafast",
             "superfast",
@@ -199,55 +240,64 @@
             "medium",
             "slow"
           ],
-          "default": "ultrafast"
+          "default": "ultrafast",
+          "description": "Preset velocità per la conversione video."
         },
         {
           "id": "use_codec",
           "label": "Usa Codec Specifici",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Usa codec specifici per la conversione video."
         },
         {
           "id": "use_vcodec",
           "label": "Usa Codec Video",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Usa codec video specifici per la conversione video."
         },
         {
           "id": "use_acodec",
           "label": "Usa Codec Audio",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Usa codec audio specifici per la conversione video."
         },
         {
           "id": "use_bitrate",
           "label": "Usa Bitrate Specifico",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Usa bitrate specifico per la conversione video."
         },
         {
           "id": "param_video",
           "label": "Parametri Video FFmpeg",
           "type": "text",
-          "default": "-c:v libx265 -crf 28 -preset medium"
+          "default": "-c:v libx265 -crf 28 -preset medium",
+          "description": "Parametri video per la conversione video."
         },
         {
           "id": "param_audio",
           "label": "Parametri Audio FFmpeg",
           "type": "text",
-          "default": "-c:a libopus -b:a 128k"
+          "default": "-c:a libopus -b:a 128k",
+          "description": "Parametri audio per la conversione video."
         },
         {
           "id": "param_subtitles",
           "label": "Parametri Sottotitoli FFmpeg",
           "type": "text",
-          "default": "-c:s webvtt"
+          "default": "-c:s webvtt",
+          "description": "Parametri sottotitoli per la conversione video."
         },
         {
           "id": "param_final",
           "label": "Parametri Finali FFmpeg",
           "type": "text",
-          "default": "-c copy"
+          "default": "-c copy",
+          "description": "Parametri finali per la conversione video."
         }
       ]
     },
@@ -260,31 +310,36 @@
           "id": "telegram_bot",
           "label": "Abilita Bot Telegram",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Abilita il bot Telegram per la notifica dei download."
         },
         {
           "id": "qbit_host",
           "label": "IP qBitTorrent",
           "type": "text",
-          "default": "192.168.1.51"
+          "default": "192.168.1.51",
+          "description": "IP del server qBitTorrent."
         },
         {
           "id": "qbit_port",
           "label": "Porta qBitTorrent",
           "type": "text",
-          "default": "6666"
+          "default": "6666",
+          "description": "Porta del server qBitTorrent."
         },
         {
           "id": "qbit_user",
           "label": "User qBitTorrent",
           "type": "text",
-          "default": "admin"
+          "default": "admin",
+          "description": "User del server qBitTorrent."
         },
         {
           "id": "qbit_pass",
           "label": "Pass qBitTorrent",
           "type": "password",
-          "default": "adminadmin"
+          "default": "adminadmin",
+          "description": "Pass del server qBitTorrent."
         }
       ]
     },
@@ -297,19 +352,22 @@
           "id": "verify",
           "label": "Verifica Certificati SSL",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Verifica certificati SSL per le richieste HTTP."
         },
         {
           "id": "timeout",
           "label": "Timeout Richieste (s)",
           "type": "number",
-          "default": 20
+          "default": 20,
+          "description": "Timeout per le richieste HTTP."
         },
         {
           "id": "max_retry",
           "label": "Tentativi Massimi",
           "type": "number",
-          "default": 8
+          "default": 8,
+          "description": "Tentativi massimi per le richieste HTTP."
         }
       ]
     },
@@ -322,13 +380,15 @@
           "id": "pre_run",
           "label": "Script Pre-Download",
           "type": "text",
-          "default": ""
+          "default": "",
+          "description": "Script da eseguire prima del download."
         },
         {
           "id": "post_run",
           "label": "Script Post-Download",
           "type": "text",
-          "default": ""
+          "default": "",
+          "description": "Script da eseguire dopo il download."
         }
       ]
     },
@@ -341,13 +401,15 @@
           "id": "crunchyroll_etp_rt",
           "label": "Crunchyroll ETP_RT",
           "type": "text",
-          "default": ""
+          "default": "",
+          "description": "Crunchyroll ETP_RT."
         },
         {
           "id": "crunchyroll_x_cr_tab_id",
           "label": "Crunchyroll X-CR-TAB-ID",
           "type": "text",
-          "default": ""
+          "default": "",
+          "description": "Crunchyroll X-CR-TAB-ID."
         }
       ]
     }
