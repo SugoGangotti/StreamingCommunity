@@ -9,8 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useState, useEffect } from "react";
 import optionsSchema from "@/lib/options_schema.json";
-import { updateConfigFile } from "@/lib/config-manager";
-import { updateFrontendConfigFile } from "@/lib/frontend-config-manager";
+import { updateConfigFiles } from "@/lib/config-manager";
 import { Switch } from "@/components/ui/switch";
 import { loadSettings } from "@/scripts/loadSettings";
 import { debugLog, setDebugMode } from "@/scripts/debug";
@@ -48,6 +47,22 @@ interface SettingsState {
   [key: string]: any;
 }
 
+interface Setting {
+  id: string;
+  label: string;
+  type: string;
+  default: any;
+  description?: string;
+  [key: string]: any;
+}
+
+interface Section {
+  id: string;
+  label: string;
+  description?: string;
+  settings: Setting[];
+}
+
 const Settings = () => {
   const [settings, setSettings] = useState<SettingsState>({});
   const [activeTab, setActiveTab] = useState("general");
@@ -63,22 +78,36 @@ const Settings = () => {
     // Save to localStorage as before
     localStorage.setItem("appSettings", JSON.stringify(settings));
 
-    // Update both config files
-    const backendSuccess = await updateConfigFile(settings);
-    const frontendSuccess = await updateFrontendConfigFile(settings);
+    // Use the new unified config system
+    const success = await updateConfigFiles(settings);
 
-    if (backendSuccess && frontendSuccess) {
+    if (success) {
       console.log("Settings saved successfully");
+    } else {
+      console.error("Failed to save settings");
     }
   };
 
   const handleReset = () => {
     const defaultSettings: SettingsState = {};
-    optionsSchema.sections.forEach((section) => {
-      section.settings.forEach((setting) => {
-        defaultSettings[setting.id] = setting.default;
+
+    // Load defaults from both frontend and sections
+    if (optionsSchema.frontend) {
+      optionsSchema.frontend.forEach((section: Section) => {
+        section.settings.forEach((setting: Setting) => {
+          defaultSettings[setting.id] = setting.default;
+        });
       });
-    });
+    }
+
+    if (optionsSchema.sections) {
+      optionsSchema.sections.forEach((section: Section) => {
+        section.settings.forEach((setting: Setting) => {
+          defaultSettings[setting.id] = setting.default;
+        });
+      });
+    }
+
     setSettings(defaultSettings);
   };
 
@@ -101,7 +130,7 @@ const Settings = () => {
     });
   };
 
-  const renderSettingField = (setting: any) => {
+  const renderSettingField = (setting: Setting) => {
     const value =
       settings[setting.id] !== undefined
         ? settings[setting.id]
@@ -295,66 +324,133 @@ const Settings = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-blue-800 dark:bg-black w-full gap-1 p-1 flex-wrap h-full">
-          {optionsSchema.sections.map((section) => (
-            <TabsTrigger
-              key={section.id}
-              value={section.id}
-              className="hover:bg-blue-300/80 dark:hover:bg-blue-900/80"
-            >
-              {section.label}
-            </TabsTrigger>
-          ))}
+          {optionsSchema.frontend &&
+            optionsSchema.frontend.map((section: Section) => (
+              <TabsTrigger
+                key={section.id}
+                value={section.id}
+                className="hover:bg-blue-300/80 dark:hover:bg-blue-900/80"
+              >
+                {section.label}
+              </TabsTrigger>
+            ))}
+
+          {optionsSchema.sections &&
+            optionsSchema.sections.map((section: Section) => (
+              <TabsTrigger
+                key={section.id}
+                value={section.id}
+                className="hover:bg-blue-300/80 dark:hover:bg-blue-900/80"
+              >
+                {section.label}
+              </TabsTrigger>
+            ))}
         </TabsList>
 
-        {optionsSchema.sections.map((section) => (
-          <TabsContent key={section.id} value={section.id}>
-            <Card className="p-4 gap-3 w-full">
-              <CardHeader className="mb-4">
-                <CardTitle className="text-2xl font-bold leading-tight tracking-[-0.015em] pt-5">
-                  {section.label}
-                </CardTitle>
+        {optionsSchema.frontend &&
+          optionsSchema.frontend.map((section: Section) => (
+            <TabsContent key={section.id} value={section.id}>
+              <Card className="p-4 gap-3 w-full">
+                <CardHeader className="mb-4">
+                  <CardTitle className="text-2xl font-bold leading-tight tracking-[-0.015em] pt-5">
+                    {section.label}
+                  </CardTitle>
 
-                {section.description && (
-                  <CardDescription className="text-[#9d9db8] text-md font-normal leading-normal">
-                    {section.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
+                  {section.description && (
+                    <CardDescription className="text-[#9d9db8] text-md font-normal leading-normal">
+                      {section.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
 
-              {section.settings.map((setting) => (
-                <Card
-                  key={setting.id}
-                  className="p-0 bg-blue-800/10 dark:bg-black/10 shadow-none border-0"
-                >
-                  <CardContent
-                    className={cn(
-                      "flex w-full p-4 items-left justify-between",
-                      setting.type === "text-field"
-                        ? "flex-col gap-4"
-                        : "flex-row"
-                    )}
+                {section.settings.map((setting: Setting) => (
+                  <Card
+                    key={setting.id}
+                    className="p-0 bg-blue-800/10 dark:bg-black/10 shadow-none border-0"
                   >
-                    <div className="flex flex-col">
-                      <CardTitle className="text-base">
-                        {setting.label}
-                      </CardTitle>
+                    <CardContent
+                      className={cn(
+                        "flex w-full p-4 items-left justify-between",
+                        setting.type === "text-field"
+                          ? "flex-col gap-4"
+                          : "flex-row"
+                      )}
+                    >
+                      <div className="flex flex-col">
+                        <CardTitle className="text-base">
+                          {setting.label}
+                        </CardTitle>
 
-                      {"description" in setting ? (
-                        <CardDescription>{setting.description}</CardDescription>
-                      ) : setting.type === "boolean" ? (
-                        <CardDescription>
-                          {`Abilita/disabilita ${setting.label.toLowerCase()}`}
-                        </CardDescription>
-                      ) : null}
-                    </div>
+                        {"description" in setting ? (
+                          <CardDescription>
+                            {setting.description}
+                          </CardDescription>
+                        ) : setting.type === "boolean" ? (
+                          <CardDescription>
+                            {`Abilita/disabilita ${setting.label.toLowerCase()}`}
+                          </CardDescription>
+                        ) : null}
+                      </div>
 
-                    {renderSettingField(setting)}
-                  </CardContent>
-                </Card>
-              ))}
-            </Card>
-          </TabsContent>
-        ))}
+                      {renderSettingField(setting)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </Card>
+            </TabsContent>
+          ))}
+        {optionsSchema.sections &&
+          optionsSchema.sections.map((section: Section) => (
+            <TabsContent key={section.id} value={section.id}>
+              <Card className="p-4 gap-3 w-full">
+                <CardHeader className="mb-4">
+                  <CardTitle className="text-2xl font-bold leading-tight tracking-[-0.015em] pt-5">
+                    {section.label}
+                  </CardTitle>
+
+                  {section.description && (
+                    <CardDescription className="text-[#9d9db8] text-md font-normal leading-normal">
+                      {section.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+
+                {section.settings.map((setting: Setting) => (
+                  <Card
+                    key={setting.id}
+                    className="p-0 bg-blue-800/10 dark:bg-black/10 shadow-none border-0"
+                  >
+                    <CardContent
+                      className={cn(
+                        "flex w-full p-4 items-left justify-between",
+                        setting.type === "text-field"
+                          ? "flex-col gap-4"
+                          : "flex-row"
+                      )}
+                    >
+                      <div className="flex flex-col">
+                        <CardTitle className="text-base">
+                          {setting.label}
+                        </CardTitle>
+
+                        {"description" in setting ? (
+                          <CardDescription>
+                            {setting.description}
+                          </CardDescription>
+                        ) : setting.type === "boolean" ? (
+                          <CardDescription>
+                            {`Abilita/disabilita ${setting.label.toLowerCase()}`}
+                          </CardDescription>
+                        ) : null}
+                      </div>
+
+                      {renderSettingField(setting)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </Card>
+            </TabsContent>
+          ))}
       </Tabs>
 
       <div className="flex justify-end gap-4 p-4">
