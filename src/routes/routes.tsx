@@ -1,8 +1,7 @@
 import { Homepage } from "@/pages/homepage";
 import LoginPage from "@/pages/login";
-import { Settings } from "@/pages/settings";
+import Settings from "@/pages/settings";
 import SignupPage from "@/pages/signup";
-import { TestSettings } from "@/pages/test-settings";
 
 export interface RouteConfig {
   path: string;
@@ -22,12 +21,6 @@ export const routes: RouteConfig[] = [
     path: "/settings",
     component: Settings,
     title: "Settings",
-    showInNavbar: true,
-  },
-  {
-    path: "/test-settings",
-    component: TestSettings,
-    title: "Test Settings",
     showInNavbar: true,
   },
   {
