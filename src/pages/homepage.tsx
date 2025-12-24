@@ -1,5 +1,4 @@
 import TrendingBanner from "@/components/trending-banner";
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { loadSettings } from "@/scripts/loadSettings";
 import UpdateVersion from "@/components/update-version";
@@ -16,10 +15,12 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-col gap-4 items-center justify-center">
-      <UpdateVersion />
+    <div className="flex h-full w-full flex-col items-center">
+      <div className="flex max-w-[80vw] flex-col gap-4 items-center">
+        <UpdateVersion />
 
-      {settings.show_trending && <TrendingBanner />}
+        {settings.show_trending && <TrendingBanner />}
+      </div>
     </div>
   );
 };

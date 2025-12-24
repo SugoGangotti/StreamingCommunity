@@ -64,17 +64,15 @@ const TrendingBanner = () => {
   return (
     <div className="mx-auto flex flex-col">
       {loading ? (
-        <div className="max-w-[80vw] mx-auto">
-          <div className="flex gap-4 overflow-hidden">
-            {Array.from({ length: 20 }).map((_, index) => (
-              <div key={index} className="basis-1/3">
-                <div className="w-full aspect-2/3 bg-gray-200 animate-pulse rounded-lg" />
-              </div>
-            ))}
-          </div>
+        <div className="flex gap-4 overflow-hidden mx-auto">
+          {Array.from({ length: 20 }).map((_, index) => (
+            <div key={index} className="basis-1/3">
+              <div className="w-full aspect-2/3 bg-gray-200 animate-pulse rounded-lg" />
+            </div>
+          ))}
         </div>
       ) : error ? (
-        <div className="max-w-[80vw] mx-auto text-center py-8">
+        <div className="w-full mx-auto text-center py-8">
           <p className="text-red-500">{error}</p>
           <button
             onClick={loadTrendingData}
@@ -86,7 +84,7 @@ const TrendingBanner = () => {
       ) : (
         <Carousel
           setApi={setApi}
-          className="max-w-[80vw] flex flex-row"
+          className="max-w-[80vw] flex flex-row justify-between"
           plugins={[
             Autoplay({
               delay: 3000,

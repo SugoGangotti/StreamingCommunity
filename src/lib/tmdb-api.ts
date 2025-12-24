@@ -38,7 +38,7 @@ export const fetchTrendingData = async (): Promise<TrendingItem[]> => {
       poster: movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         : `https://picsum.photos/300/450?random=${movie.id}`,
-      url: `https://www.imdb.com/title/tt${movie.id}/`,
+      url: `https://www.themoviedb.org/movie/${movie.id}/`,
       year: movie.release_date
         ? new Date(movie.release_date).getFullYear()
         : 2024,
