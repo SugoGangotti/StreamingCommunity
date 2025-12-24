@@ -24,12 +24,6 @@ export const routes: RouteConfig[] = [
     showInNavbar: true,
   },
   {
-    path: "/account",
-    component: Settings,
-    title: "Account",
-    showInNavbar: true,
-  },
-  {
     path: "/login",
     component: LoginPage,
     title: "Login",

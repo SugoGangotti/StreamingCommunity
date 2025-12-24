@@ -18,7 +18,7 @@
           "label": "Mostra Messaggi",
           "type": "boolean",
           "default": true,
-          "description": "Mostra i messaggi di debug e di avviso."
+          "description": "Mostra i messaggi di notifica per aggiornamenti e avvisi."
         },
         {
           "id": "show_trending",

@@ -17,7 +17,7 @@ const Homepage = () => {
   return (
     <div className="flex h-full w-full flex-col items-center">
       <div className="flex max-w-[80vw] flex-col gap-4 items-center">
-        <UpdateVersion />
+        {settings.show_message && <UpdateVersion />}
 
         {settings.show_trending && <TrendingBanner />}
       </div>
