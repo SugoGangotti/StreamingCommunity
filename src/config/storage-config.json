@@ -1,0 +1,9 @@
+{
+  "root_path": "/mnt/arrowarmedia/",
+  "movie_folder_name": "Film",
+  "serie_folder_name": "SerieTV",
+  "anime_folder_name": "Anime",
+  "map_episode_name": "E%(episode)_%(episode_name)",
+  "add_siteName": false,
+  "cleanup_tmp_folder": true
+}

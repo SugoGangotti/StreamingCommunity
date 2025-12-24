@@ -1,0 +1,16 @@
+{
+  "default_video_workers": 8,
+  "default_audio_workers": 8,
+  "segment_timeout": 8,
+  "enable_retry": true,
+  "specific_list_audio": [
+    "ita"
+  ],
+  "download_subtitle": false,
+  "merge_subs": false,
+  "specific_list_subtitles": [],
+  "limit_segment": 0,
+  "cleanup_tmp_folder": true,
+  "get_only_link": false,
+  "cleanup_tmp_folder_download": true
+}

@@ -1,0 +1,7 @@
+{
+  "telegram_bot": false,
+  "qbit_host": "192.168.1.51",
+  "qbit_port": "6666",
+  "qbit_user": "admin",
+  "qbit_pass": "adminadmin"
+}

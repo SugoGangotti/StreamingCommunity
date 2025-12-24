@@ -1,0 +1,14 @@
+{
+  "use_gpu": false,
+  "force_resolution": "Best",
+  "extension": ".mp4",
+  "default_preset": "ultrafast",
+  "use_codec": false,
+  "use_vcodec": true,
+  "use_acodec": true,
+  "use_bitrate": true,
+  "param_video": "-c:v libx265 -crf 28 -preset medium",
+  "param_audio": "-c:a libopus -b:a 128k",
+  "param_subtitles": "-c:s webvtt",
+  "param_final": "-c copy"
+}
