@@ -8,7 +8,7 @@ const LogoAndName = () => {
         className="max-h-8 rounded-full"
         alt="Arrowar / StreamingCommunity"
       />
-      <span className="text-lg font-semibold tracking-tighter">
+      <span className="text-lg font-semibold tracking-tighter whitespace-nowrap">
         Media | Downloader
       </span>
     </div>

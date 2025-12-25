@@ -78,12 +78,19 @@ const Navbar = ({ className }: NavbarProps) => {
     <section className={cn("py-6 px-18", className)}>
       <nav
         className={cn(
-          "flex flex-row justify-between w-full p-4 bg-muted",
+          "flex flex-row justify-between w-full p-2 bg-muted",
           "bg-blue-900/80 backdrop-blur-sm",
           "border-4 border-blue-800 rounded-2xl"
         )}
       >
-        <LogoAndName />
+        <>
+          <Button variant="ghost" className="p-2">
+            <Link to="/">
+              <LogoAndName />
+            </Link>
+          </Button>
+        </>
+
         <NavigationMenu className="hidden lg:block w-full">
           <NavigationMenuList>
             {routes
