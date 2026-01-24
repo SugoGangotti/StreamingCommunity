@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
 import { loadSettings } from "@/scripts/loadSettings";
 import type { SettingType } from "@/types/SettingsType";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Download as DownloadIcon,
-  Search,
-  Film,
-  Tv,
-  Clock,
-  Star,
-  Calendar,
-  FileText,
-} from "lucide-react";
+import { Film, Tv, Star, FileText } from "lucide-react";
 import DownloadSearchbar from "@/components/searchbar-and-filters/downloadSearchbar";
 import type { MediaItemType } from "@/types/MediaItemType";
 import { mediaItems } from "@/MOCKUP/searchData";
+import MediaItem from "@/components/mediaItem";
+import NoResults from "@/components/noResults";
 
 interface SettingsState {
   [key: string]: SettingType;
@@ -126,110 +116,17 @@ const Download = () => {
           {/* Media Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => (
-              <Card
+              <MediaItem
                 key={item.id}
-                className="group hover:shadow-lg transition-all duration-300 overflow-hidden"
-              >
-                {/* Image Container */}
-                <div className="relative aspect-2/3 overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
-
-                  {/* Type Badge */}
-                  <div className="absolute top-2 left-2">
-                    <Badge
-                      className={`${getTypeColor(item.type)} text-white text-xs`}
-                    >
-                      {getTypeIcon(item.type)}
-                      <span className="ml-1">{item.type}</span>
-                    </Badge>
-                  </div>
-
-                  {/* Rating Badge */}
-                  <div className="absolute top-2 right-2">
-                    <Badge
-                      variant="secondary"
-                      className="bg-black/70 text-white"
-                    >
-                      <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
-                      {item.rating}
-                    </Badge>
-                  </div>
-
-                  {/* Download Overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Button
-                      size="lg"
-                      className="transform scale-90 group-hover:scale-100 transition-transform"
-                    >
-                      <DownloadIcon className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <CardContent className="p-4 space-y-3">
-                  <div>
-                    <h3 className="font-semibold text-lg line-clamp-1">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>{item.year}</span>
-                    {item.duration && (
-                      <>
-                        <Clock className="h-3 w-3 ml-2" />
-                        <span>{item.duration}</span>
-                      </>
-                    )}
-                    {item.seasons && (
-                      <>
-                        <Tv className="h-3 w-3 ml-2" />
-                        <span>{item.seasons} seasons</span>
-                      </>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
-                        {item.quality}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {item.size}
-                      </span>
-                    </div>
-                    <DownloadIcon className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </CardContent>
-              </Card>
+                item={item}
+                getTypeColor={getTypeColor}
+                getTypeIcon={getTypeIcon}
+              />
             ))}
           </div>
 
           {/* No Results */}
-          {filteredItems.length === 0 && (
-            <Card className="border-dashed">
-              <CardContent className="pt-6">
-                <div className="text-center space-y-2">
-                  <Search className="h-12 w-12 mx-auto text-muted-foreground" />
-                  <h3 className="text-lg font-semibold">No results found</h3>
-                  <p className="text-muted-foreground">
-                    Try adjusting your search terms or filters
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {filteredItems.length === 0 && <NoResults />}
         </div>
       </div>
     </div>

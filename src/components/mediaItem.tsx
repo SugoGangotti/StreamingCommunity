@@ -7,8 +7,8 @@ import { Badge } from "./ui/badge";
 
 interface MediaItemProps {
   item: MediaItemType;
-  getTypeColor: (type: string) => string;
-  getTypeIcon: (type: string) => React.ReactNode;
+  getTypeColor: (type: MediaItemType["type"]) => string;
+  getTypeIcon: (type: MediaItemType["type"]) => React.ReactNode;
 }
 
 const MediaItem = ({ item, getTypeColor, getTypeIcon }: MediaItemProps) => {
