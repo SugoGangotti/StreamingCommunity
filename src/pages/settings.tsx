@@ -1,4 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
+
+import type { SettingType } from "@/types/SettingsType";
+
+import { cn } from "@/lib/utils";
+import optionsSchema from "@/lib/options_schema.json";
+import { updateConfigFiles } from "@/lib/config-manager";
+
+import { loadSettings } from "@/scripts/loadSettings";
+import { debugLog, setDebugMode } from "@/scripts/debug";
+
 import {
   Card,
   CardContent,
@@ -7,13 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { useState, useEffect } from "react";
-import optionsSchema from "@/lib/options_schema.json";
-import { updateConfigFiles } from "@/lib/config-manager";
 import { Switch } from "@/components/ui/switch";
-import { loadSettings } from "@/scripts/loadSettings";
-import { debugLog, setDebugMode } from "@/scripts/debug";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,8 +37,7 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import type { SettingType } from "@/types/SettingsType";
+
 import AccountDialog from "@/components/accountDialog";
 
 interface SettingsState {

@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { loadSettings } from "@/scripts/loadSettings";
 import type { SettingType } from "@/types/SettingsType";
-import { Film, Tv, Star, FileText } from "lucide-react";
 import DownloadSearchbar from "@/components/searchbar-and-filters/downloadSearchbar";
-import type { MediaItemType } from "@/types/MediaItemType";
 import { mediaItems } from "@/MOCKUP/searchData";
 import MediaItem from "@/components/mediaItem";
 import NoResults from "@/components/noResults";
@@ -49,36 +47,6 @@ const Download = () => {
       }
     });
 
-  const getTypeIcon = (type: MediaItemType["type"]) => {
-    switch (type) {
-      case "movie":
-        return <Film className="h-4 w-4" />;
-      case "series":
-        return <Tv className="h-4 w-4" />;
-      case "anime":
-        return <Star className="h-4 w-4" />;
-      case "documentary":
-        return <FileText className="h-4 w-4" />;
-      default:
-        return <Film className="h-4 w-4" />;
-    }
-  };
-
-  const getTypeColor = (type: MediaItemType["type"]) => {
-    switch (type) {
-      case "movie":
-        return "bg-blue-500";
-      case "series":
-        return "bg-green-500";
-      case "anime":
-        return "bg-purple-500";
-      case "documentary":
-        return "bg-orange-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
   return (
     <div className="flex h-full w-full flex-col items-center">
       <div className="flex max-w-[80vw] flex-col gap-6 items-center">
@@ -116,12 +84,7 @@ const Download = () => {
           {/* Media Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => (
-              <MediaItem
-                key={item.id}
-                item={item}
-                getTypeColor={getTypeColor}
-                getTypeIcon={getTypeIcon}
-              />
+              <MediaItem key={item.id} item={item} />
             ))}
           </div>
 

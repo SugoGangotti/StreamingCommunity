@@ -1,6 +1,7 @@
 import { Download } from "@/pages/download";
 import { Homepage } from "@/pages/homepage";
 import LoginPage from "@/pages/login";
+import { Queue } from "@/pages/queue";
 import Settings from "@/pages/settings";
 import SignupPage from "@/pages/signup";
 
@@ -44,6 +45,12 @@ export const getAllRoutes = (): RouteConfig[] => [
     title: "Sign Up",
     showInNavbar: false,
     requiresAccounts: true,
+  },
+  {
+    path: "/queue",
+    component: Queue,
+    title: "Queue",
+    showInNavbar: true,
   },
 ];
 
