@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export type Setting = {
+export type SettingType = {
   id: string;
   label: string;
   type: string;

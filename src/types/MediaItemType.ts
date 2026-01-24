@@ -1,4 +1,4 @@
-export type MediaItem = {
+export type MediaItemType = {
   id: string;
   title: string;
   type: "movie" | "series" | "anime" | "documentary";
