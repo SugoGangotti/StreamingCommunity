@@ -80,7 +80,7 @@ const Navbar = ({ className }: NavbarProps) => {
         className={cn(
           "flex flex-row justify-between w-full p-2 bg-muted",
           "bg-blue-900/80 backdrop-blur-sm",
-          "border-4 border-blue-800 rounded-2xl"
+          "border-4 border-blue-800 rounded-2xl",
         )}
       >
         <>
@@ -91,7 +91,7 @@ const Navbar = ({ className }: NavbarProps) => {
           </Button>
         </>
 
-        <NavigationMenu className="hidden lg:block w-full">
+        <NavigationMenu className="hidden lg:block w-full justify-around">
           <NavigationMenuList>
             {routes
               .filter((route) => route.showInNavbar)
@@ -135,7 +135,7 @@ const Navbar = ({ className }: NavbarProps) => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex gap-3 md:w-full justify-end">
+        <div className="flex gap-3 justify-end">
           <UserToggle className="hidden md:inline-flex" />
           <ModeToggle className="hidden md:inline-flex" />
 
