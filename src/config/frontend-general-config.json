@@ -1,5 +1,6 @@
 {
   "debug": false,
   "show_message": true,
-  "show_trending": true
+  "show_trending": true,
+  "enable_accounts": false
 }

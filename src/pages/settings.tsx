@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Card,
   CardContent,
@@ -32,27 +33,10 @@ import {
 } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import type { Setting } from "@/types/Setting";
+import AccountDialog from "@/components/accountDialog";
 
 interface SettingsState {
-  [key: string]: any;
-}
-
-interface Setting {
-  id: string;
-  label: string;
-  type: string;
-  default: any;
-  description?: string;
   [key: string]: any;
 }
 
@@ -136,7 +120,7 @@ const Settings = () => {
         ? settings[setting.id]
         : setting.default;
     debugLog(
-      `Rendering ${setting.id} with value: ${value}, type: ${setting.type}`
+      `Rendering ${setting.id} with value: ${value}, type: ${setting.type}`,
     );
 
     switch (setting.type) {
@@ -181,65 +165,12 @@ const Settings = () => {
         );
 
       case "account":
-        const [username, setUsername] = useState(
-          value?.username || setting.default.username || ""
-        );
-        const [password, setPassword] = useState(
-          value?.password || setting.default.password || ""
-        );
-
         return (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Configura</Button>
-            </DialogTrigger>
-
-            <DialogContent className="sm:max-w-[425px] flex flex-col gap-4">
-              <DialogHeader>
-                <DialogTitle>
-                  Inserisci le credenziali per {setting.label}
-                </DialogTitle>
-                <DialogDescription>{setting.description}</DialogDescription>
-              </DialogHeader>
-
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor={`${setting.id}-username`}>Username</Label>
-                  <Input
-                    id={`${setting.id}-username`}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder={setting.default.username || ""}
-                    minLength={4}
-                    maxLength={20}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor={`${setting.id}-password`}>Password</Label>
-                  <Input
-                    id={`${setting.id}-password`}
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={setting.default.password || ""}
-                  />
-                </div>
-              </div>
-
-              <DialogFooter className="flex flex-row gap-3">
-                <Button
-                  type="submit"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    updateSetting(setting.id, { username, password });
-                  }}
-                >
-                  Salva
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <AccountDialog
+            setting={setting}
+            value={value}
+            updateSetting={updateSetting}
+          />
         );
 
       case "number":
@@ -293,7 +224,7 @@ const Settings = () => {
                           {setting.extended_options?.[option] || option}
                           <p className="uppercase">[{option}]</p>
                         </MultiSelectItem>
-                      )
+                      ),
                     )
                   : setting.default?.map((option: string) => (
                       <MultiSelectItem key={option} value={option}>
@@ -373,7 +304,7 @@ const Settings = () => {
                         "flex w-full p-4 items-left justify-between",
                         setting.type === "text-field"
                           ? "flex-col gap-4"
-                          : "flex-row"
+                          : "flex-row",
                       )}
                     >
                       <div className="flex flex-col">
@@ -425,7 +356,7 @@ const Settings = () => {
                         "flex w-full p-4 items-left justify-between",
                         setting.type === "text-field"
                           ? "flex-col gap-4"
-                          : "flex-row"
+                          : "flex-row",
                       )}
                     >
                       <div className="flex flex-col">

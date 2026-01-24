@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import optionsSchema from "@/lib/options_schema.json";
 import { debugLog, debugError, setDebugMode } from "./debug";
 
@@ -6,7 +7,7 @@ interface SettingsState {
 }
 
 export const loadSettings = async (
-  setSettings: React.Dispatch<React.SetStateAction<SettingsState>>
+  setSettings: React.Dispatch<React.SetStateAction<SettingsState>>,
 ): Promise<void> => {
   debugLog("Starting loadSettings function");
 

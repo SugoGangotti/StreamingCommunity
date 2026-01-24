@@ -24,6 +24,7 @@ const SETTING_TO_SECTION: Record<string, string> = {
   debug: "frontend-general",
   show_message: "frontend-general",
   show_trending: "frontend-general",
+  enable_accounts: "frontend-general",
   // Backend general
   fetch_domain_online: "backend-general",
   bypass_dns: "backend-general",
@@ -84,7 +85,7 @@ const SETTING_TO_SECTION: Record<string, string> = {
  * Groups settings by section for saving to separate config files
  */
 export const groupSettingsBySection = (
-  settings: SettingsState
+  settings: SettingsState,
 ): Record<string, SettingsState> => {
   const groupedSettings: Record<string, SettingsState> = {};
 
@@ -108,7 +109,7 @@ export const groupSettingsBySection = (
  * Updates all config files with new settings
  */
 export const updateConfigFiles = async (
-  settings: SettingsState
+  settings: SettingsState,
 ): Promise<boolean> => {
   try {
     const groupedSettings = groupSettingsBySection(settings);
@@ -127,7 +128,7 @@ export const updateConfigFiles = async (
               "Content-Type": "application/json",
             },
             body: JSON.stringify(sectionSettings),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -135,7 +136,7 @@ export const updateConfigFiles = async (
         }
 
         return true;
-      }
+      },
     );
 
     await Promise.all(updatePromises);
@@ -145,7 +146,7 @@ export const updateConfigFiles = async (
   } catch (error) {
     console.error("Error updating config files:", error);
     toast.error(
-      "Errore durante il salvataggio delle configurazioni. Assicurati che il server sia in esecuzione."
+      "Errore durante il salvataggio delle configurazioni. Assicurati che il server sia in esecuzione.",
     );
     return false;
   }
@@ -155,7 +156,7 @@ export const updateConfigFiles = async (
  * Alternative implementation for development without backend
  */
 export const updateConfigFilesDev = async (
-  settings: SettingsState
+  settings: SettingsState,
 ): Promise<boolean> => {
   try {
     const groupedSettings = groupSettingsBySection(settings);
@@ -172,7 +173,7 @@ export const updateConfigFilesDev = async (
       "Configurazioni salvate localmente. Per salvare nei file è necessario un backend.",
       {
         duration: 5000,
-      }
+      },
     );
 
     console.log("Config data that would be saved:", groupedSettings);

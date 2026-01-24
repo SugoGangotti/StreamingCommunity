@@ -26,6 +26,13 @@
           "type": "boolean",
           "default": false,
           "description": "Mostra quali contenuti sono in Trending."
+        },
+        {
+          "id": "enable_accounts",
+          "label": "Abilita Account",
+          "type": "boolean",
+          "default": false,
+          "description": "Abilita la funzionalità degli account utente."
         }
       ]
     },
