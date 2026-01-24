@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import type { Setting } from "@/types/Setting";
+import type { SettingType } from "@/types/SettingsType";
 import AccountDialog from "@/components/accountDialog";
 
 interface SettingsState {
@@ -44,7 +44,7 @@ interface Section {
   id: string;
   label: string;
   description?: string;
-  settings: Setting[];
+  settings: SettingType[];
 }
 
 const Settings = () => {
@@ -78,7 +78,7 @@ const Settings = () => {
     // Load defaults from both frontend and sections
     if (optionsSchema.frontend) {
       optionsSchema.frontend.forEach((section: Section) => {
-        section.settings.forEach((setting: Setting) => {
+        section.settings.forEach((setting: SettingType) => {
           defaultSettings[setting.id] = setting.default;
         });
       });
@@ -86,7 +86,7 @@ const Settings = () => {
 
     if (optionsSchema.sections) {
       optionsSchema.sections.forEach((section: Section) => {
-        section.settings.forEach((setting: Setting) => {
+        section.settings.forEach((setting: SettingType) => {
           defaultSettings[setting.id] = setting.default;
         });
       });
@@ -114,7 +114,7 @@ const Settings = () => {
     });
   };
 
-  const renderSettingField = (setting: Setting) => {
+  const renderSettingField = (setting: SettingType) => {
     const value =
       settings[setting.id] !== undefined
         ? settings[setting.id]
@@ -294,7 +294,7 @@ const Settings = () => {
                   )}
                 </CardHeader>
 
-                {section.settings.map((setting: Setting) => (
+                {section.settings.map((setting: SettingType) => (
                   <Card
                     key={setting.id}
                     className="p-0 bg-blue-800/10 dark:bg-black/10 shadow-none border-0"
@@ -346,7 +346,7 @@ const Settings = () => {
                   )}
                 </CardHeader>
 
-                {section.settings.map((setting: Setting) => (
+                {section.settings.map((setting: SettingType) => (
                   <Card
                     key={setting.id}
                     className="p-0 bg-blue-800/10 dark:bg-black/10 shadow-none border-0"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { loadSettings } from "@/scripts/loadSettings";
-import type { Setting } from "@/types/Setting";
+import type { SettingType } from "@/types/SettingsType";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,11 @@ import {
   FileText,
 } from "lucide-react";
 import DownloadSearchbar from "@/components/searchbar-and-filters/downloadSearchbar";
-import type { MediaItem } from "@/types/MediaItem";
+import type { MediaItemType } from "@/types/MediaItemType";
 import { mediaItems } from "@/MOCKUP/searchData";
 
 interface SettingsState {
-  [key: string]: Setting;
+  [key: string]: SettingType;
 }
 
 const Download = () => {
@@ -59,7 +59,7 @@ const Download = () => {
       }
     });
 
-  const getTypeIcon = (type: MediaItem["type"]) => {
+  const getTypeIcon = (type: MediaItemType["type"]) => {
     switch (type) {
       case "movie":
         return <Film className="h-4 w-4" />;
@@ -74,7 +74,7 @@ const Download = () => {
     }
   };
 
-  const getTypeColor = (type: MediaItem["type"]) => {
+  const getTypeColor = (type: MediaItemType["type"]) => {
     switch (type) {
       case "movie":
         return "bg-blue-500";

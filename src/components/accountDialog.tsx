@@ -12,14 +12,14 @@ import {
 } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import type { Setting } from "@/types/Setting";
+import type { SettingType } from "@/types/SettingsType";
 
 const AccountDialog = ({
   setting,
   value,
   updateSetting,
 }: {
-  setting: Setting;
+  setting: SettingType;
   value: any;
   updateSetting: (id: string, value: any) => void;
 }) => {
