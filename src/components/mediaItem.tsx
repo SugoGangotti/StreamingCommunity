@@ -5,13 +5,14 @@ import { Button } from "./ui/button";
 import type { MediaItemType } from "@/types/MediaItemType";
 import { Badge } from "./ui/badge";
 
+import { getTypeColor } from "@/lib/getTypeColor";
+import { getTypeIcon } from "@/lib/getTypeIcon";
+
 interface MediaItemProps {
   item: MediaItemType;
-  getTypeColor: (type: MediaItemType["type"]) => string;
-  getTypeIcon: (type: MediaItemType["type"]) => React.ReactNode;
 }
 
-const MediaItem = ({ item, getTypeColor, getTypeIcon }: MediaItemProps) => {
+const MediaItem = ({ item }: MediaItemProps) => {
   return (
     <Card
       key={item.id}
