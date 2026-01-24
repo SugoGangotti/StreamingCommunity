@@ -9,9 +9,10 @@ export interface RouteConfig {
   component: React.ComponentType;
   title?: string;
   showInNavbar: boolean;
+  requiresAccounts?: boolean;
 }
 
-export const routes: RouteConfig[] = [
+export const getAllRoutes = (): RouteConfig[] => [
   {
     path: "/",
     component: Homepage,
@@ -35,19 +36,21 @@ export const routes: RouteConfig[] = [
     component: LoginPage,
     title: "Login",
     showInNavbar: false,
+    requiresAccounts: true,
   },
   {
     path: "/signup",
     component: SignupPage,
     title: "Sign Up",
     showInNavbar: false,
+    requiresAccounts: true,
   },
 ];
 
-export const routesByPath = routes.reduce(
-  (acc, route) => {
-    acc[route.path] = route;
-    return acc;
-  },
-  {} as Record<string, RouteConfig>,
-);
+export const getFilteredRoutes = (enableAccounts: boolean): RouteConfig[] => {
+  const allRoutes = getAllRoutes();
+  return allRoutes.filter((route) => !route.requiresAccounts || enableAccounts);
+};
+
+// Default export for backward compatibility
+export const routes = getAllRoutes();
