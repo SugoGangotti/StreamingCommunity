@@ -12,10 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import type { QueueItemType } from "@/types/QueueItemType";
 import { getTypeColor } from "@/lib/getTypeColor";
 import { getTypeIcon } from "@/lib/getTypeIcon";
+import { getStatusIcon } from "@/lib/getStatusIcon";
+import { getStatusBadge } from "@/lib/getStatusBadge";
 
 const Queue = () => {
   // Mock data per la coda
@@ -105,36 +106,6 @@ const Queue = () => {
 
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOverItem, setDragOverItem] = useState<string | null>(null);
-
-  const getStatusIcon = (status: QueueItemType["status"]) => {
-    switch (status) {
-      case "downloading":
-        return <Download className="h-4 w-4 animate-pulse text-blue-500" />;
-      case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "error":
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case "pending":
-        return <Clock className="h-4 w-4 text-gray-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: QueueItemType["status"]) => {
-    switch (status) {
-      case "downloading":
-        return <Badge className="bg-blue-500">In Download</Badge>;
-      case "completed":
-        return <Badge className="bg-green-500">Completato</Badge>;
-      case "error":
-        return <Badge className="bg-red-500">Errore</Badge>;
-      case "pending":
-        return <Badge variant="secondary">In Attesa</Badge>;
-      default:
-        return <Badge variant="secondary">In Attesa</Badge>;
-    }
-  };
 
   const handleDragStart = (e: React.DragEvent, itemId: string) => {
     setDraggedItem(itemId);
