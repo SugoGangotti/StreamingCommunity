@@ -5,16 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Download as DownloadIcon,
   Search,
-  Filter,
   Film,
   Tv,
   Clock,
@@ -113,61 +105,16 @@ const Download = () => {
           </div>
 
           {/* Search and Filters */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col lg:flex-row gap-4">
-                {/* Search Bar */}
-                <DownloadSearchbar
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                />
-
-                {/* Filters */}
-                <div className="flex gap-2">
-                  <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger className="w-[140px]">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="movie">Movies</SelectItem>
-                      <SelectItem value="series">Series</SelectItem>
-                      <SelectItem value="anime">Anime</SelectItem>
-                      <SelectItem value="documentary">Documentaries</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={selectedQuality}
-                    onValueChange={setSelectedQuality}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue placeholder="Quality" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Quality</SelectItem>
-                      <SelectItem value="4K">4K</SelectItem>
-                      <SelectItem value="1080p">1080p</SelectItem>
-                      <SelectItem value="720p">720p</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue placeholder="Sort" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="latest">Latest</SelectItem>
-                      <SelectItem value="oldest">Oldest</SelectItem>
-                      <SelectItem value="rating">Rating</SelectItem>
-                      <SelectItem value="title">Title</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <DownloadSearchbar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            selectedQuality={selectedQuality}
+            setSelectedQuality={setSelectedQuality}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
 
           {/* Results Count */}
           <div className="flex items-center justify-between">
