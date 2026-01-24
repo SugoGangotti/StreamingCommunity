@@ -1,5 +1,3 @@
-"use client";
-
 import { MenuIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -34,13 +32,16 @@ import { LogoAndName } from "./logo-and-name";
 import { ModeToggle } from "./mode-toggle";
 import { Link } from "react-router-dom";
 import { UserToggle } from "./user-toggle";
-import { routes } from "@/routes/routes";
+import { getFilteredRoutes } from "@/routes/routes";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface NavbarProps {
   className?: string;
 }
 
 const Navbar = ({ className }: NavbarProps) => {
+  const { enableAccounts } = useSettings();
+  const routes = getFilteredRoutes(enableAccounts);
   const settings = [
     {
       title: "Dashboard",
@@ -136,7 +137,7 @@ const Navbar = ({ className }: NavbarProps) => {
         </NavigationMenu>
 
         <div className="flex gap-3 justify-end">
-          <UserToggle className="hidden md:inline-flex" />
+          {enableAccounts && <UserToggle className="hidden md:inline-flex" />}
           <ModeToggle className="hidden md:inline-flex" />
 
           <Sheet>

@@ -1,7 +1,7 @@
+import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { Input } from "./ui/input";
 
-const DownloadSearchbar = ({
+const Searchbar = ({
   searchTerm,
   setSearchTerm,
 }: {
@@ -21,4 +21,4 @@ const DownloadSearchbar = ({
   );
 };
 
-export default DownloadSearchbar;
+export default Searchbar;
