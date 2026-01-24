@@ -22,9 +22,9 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
-import DownloadSearchbar from "@/components/downloadSearchbar";
-import { mediaItems } from "@/MOCKUP/searchdata";
+import DownloadSearchbar from "@/components/searchbar-and-filters/downloadSearchbar";
 import type { MediaItem } from "@/types/MediaItem";
+import { mediaItems } from "@/MOCKUP/searchData";
 
 interface SettingsState {
   [key: string]: Setting;
