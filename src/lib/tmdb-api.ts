@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface TrendingItem {
   title: string;
   poster: string;
@@ -19,12 +20,12 @@ export const fetchTrendingData = async (): Promise<TrendingItem[]> => {
 
     if (!TMDB_API_KEY) {
       throw new Error(
-        "TMDB API key non configurata. Vai nelle impostazioni per aggiungerla."
+        "TMDB API key non configurata. Vai nelle impostazioni per aggiungerla.",
       );
     }
 
     const tmdbResponse = await fetch(
-      `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}&language=it-IT`
+      `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}&language=it-IT`,
     );
 
     if (!tmdbResponse.ok) {

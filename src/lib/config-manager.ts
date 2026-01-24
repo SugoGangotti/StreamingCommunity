@@ -26,6 +26,7 @@ const SETTING_TO_SECTION: Record<string, string> = {
   show_message: "frontend-general",
   show_trending: "frontend-general",
   enable_accounts: "frontend-general",
+  enable_queue: "frontend-general",
   // Backend general
   fetch_domain_online: "backend-general",
   bypass_dns: "backend-general",

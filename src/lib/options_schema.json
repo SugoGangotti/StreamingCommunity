@@ -33,6 +33,13 @@
           "type": "boolean",
           "default": false,
           "description": "Abilita la funzionalità degli account utente."
+        },
+        {
+          "id": "queue_enabled",
+          "label": "Abilita Coda di Download",
+          "type": "boolean",
+          "default": true,
+          "description": "Abilita la funzionalità della coda di download."
         }
       ]
     },
