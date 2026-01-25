@@ -33,6 +33,7 @@ import { ModeToggle } from "./mode-toggle";
 import { Link } from "react-router-dom";
 import { UserToggle } from "./user-toggle";
 import { getFilteredRoutes } from "@/routes/routes";
+import type { RouteConfig } from "@/routes/routes";
 import { useSettings } from "@/contexts/SettingsContext";
 
 interface NavbarProps {
@@ -40,8 +41,11 @@ interface NavbarProps {
 }
 
 const Navbar = ({ className }: NavbarProps) => {
-  const { enableAccounts } = useSettings();
-  const routes = getFilteredRoutes(enableAccounts);
+  const { enableAccounts, enableQueue } = useSettings();
+  const routes = getFilteredRoutes(enableAccounts).filter(
+    (route: RouteConfig) => route.path !== "/queue" || enableQueue,
+  );
+
   const settings = [
     {
       title: "Dashboard",

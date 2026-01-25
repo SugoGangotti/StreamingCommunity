@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PageTemplate } from "@/components/page-template";
 import { NotFound } from "@/pages/not-found";
-import { getFilteredRoutes } from "./routes";
+import { getFilteredRoutesWithQueue } from "./routes";
 import { useSettings } from "@/contexts/SettingsContext";
 
 export const AppRouter = () => {
-  const { enableAccounts } = useSettings();
-  const routes = getFilteredRoutes(enableAccounts);
+  const { enableAccounts, enableQueue } = useSettings();
+  const routes = getFilteredRoutesWithQueue(enableAccounts, enableQueue);
 
   const router = createBrowserRouter([
     {

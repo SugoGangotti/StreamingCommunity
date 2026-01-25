@@ -35,7 +35,7 @@
           "description": "Abilita la funzionalità degli account utente."
         },
         {
-          "id": "queue_enabled",
+          "id": "enable_queue",
           "label": "Abilita Coda di Download",
           "type": "boolean",
           "default": true,

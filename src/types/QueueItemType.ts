@@ -6,4 +6,5 @@ export type QueueItemType = MediaItemType & {
   downloadSpeed?: string;
   estimatedTime?: string;
   addedAt: Date;
+  errorCode?: string;
 };

@@ -17,6 +17,7 @@ interface SettingsContextType {
   settings: SettingsState;
   updateSetting: (settingId: string, value: any) => void;
   enableAccounts: boolean;
+  enableQueue: boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -58,6 +59,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
   };
 
   const enableAccounts = settings.enable_accounts || false;
+  const enableQueue = settings.enable_queue || false;
 
   return (
     <SettingsContext.Provider
@@ -65,6 +67,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
         settings,
         updateSetting,
         enableAccounts,
+        enableQueue,
       }}
     >
       {children}

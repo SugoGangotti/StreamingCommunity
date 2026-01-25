@@ -11,6 +11,7 @@ export interface RouteConfig {
   title?: string;
   showInNavbar: boolean;
   requiresAccounts?: boolean;
+  requiresQueue?: boolean;
 }
 
 export const getAllRoutes = (): RouteConfig[] => [
@@ -51,12 +52,25 @@ export const getAllRoutes = (): RouteConfig[] => [
     component: Queue,
     title: "Queue",
     showInNavbar: true,
+    requiresQueue: true,
   },
 ];
 
 export const getFilteredRoutes = (enableAccounts: boolean): RouteConfig[] => {
   const allRoutes = getAllRoutes();
   return allRoutes.filter((route) => !route.requiresAccounts || enableAccounts);
+};
+
+export const getFilteredRoutesWithQueue = (
+  enableAccounts: boolean,
+  enableQueue: boolean,
+): RouteConfig[] => {
+  const allRoutes = getAllRoutes();
+  return allRoutes.filter(
+    (route) =>
+      (!route.requiresAccounts || enableAccounts) &&
+      (!route.requiresQueue || enableQueue),
+  );
 };
 
 // Default export for backward compatibility

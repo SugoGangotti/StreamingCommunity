@@ -74,6 +74,9 @@ const Settings = () => {
     } else {
       console.error("Failed to save settings");
     }
+
+    // Reload page as final action
+    window.location.reload();
   };
 
   const handleReset = () => {

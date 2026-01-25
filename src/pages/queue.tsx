@@ -1,22 +1,8 @@
 import { useState } from "react";
-import {
-  GripVertical,
-  Play,
-  Pause,
-  X,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  Download,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CheckCircle, AlertCircle, Clock, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import type { QueueItemType } from "@/types/QueueItemType";
-import { getTypeColor } from "@/lib/getTypeColor";
-import { getTypeIcon } from "@/lib/getTypeIcon";
-import { getStatusIcon } from "@/lib/getStatusIcon";
-import { getStatusBadge } from "@/lib/getStatusBadge";
+import QueueCard from "@/components/queue-card/queueCard";
 
 const Queue = () => {
   // Mock data per la coda
@@ -101,6 +87,7 @@ const Queue = () => {
       downloadUrl: "https://example.com/matrix",
       status: "error",
       addedAt: new Date("2024-01-20T13:30:00"),
+      errorCode: "SC-001",
     },
   ]);
 
@@ -199,6 +186,20 @@ const Queue = () => {
     (item) => item.status !== "completed" && item.status !== "error",
   );
 
+  const queueCardProps = {
+    retryDownload,
+    togglePauseResume,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd,
+    dragOverItem,
+    draggedItem,
+    removeFromQueue,
+  };
+
   return (
     <div className="flex h-full w-full flex-col items-center p-6">
       <div className="w-full max-w-4xl space-y-6">
@@ -256,110 +257,16 @@ const Queue = () => {
                 </div>
               ) : (
                 activeItems.map((item, index) => (
-                  <div key={item.id} className="flex items-start gap-3">
+                  <div
+                    key={item.id}
+                    className="flex items-start gap-3 w-full h-full"
+                  >
                     {/* Fixed Number Outside Card */}
-                    <div className="text-lg font-bold text-gray-500 w-8 text-center pt-4">
+                    <div className="text-lg font-bold text-gray-500 w-8 text-center pt-4 h-full flex items-center">
                       #{index + 1}
                     </div>
 
-                    <div
-                      draggable={item.status !== "downloading"}
-                      onDragStart={(e) => handleDragStart(e, item.id)}
-                      onDragOver={handleDragOver}
-                      onDragEnter={() => handleDragEnter(item.id)}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, item.id)}
-                      onDragEnd={handleDragEnd}
-                      className={`
-                        relative bg-card border rounded-lg p-4 transition-all flex-1
-                        ${item.status !== "downloading" ? "cursor-move hover:shadow-md" : "cursor-not-allowed opacity-90"}
-                        ${dragOverItem === item.id ? "border-blue-500 bg-blue-50/50" : ""}
-                        ${draggedItem === item.id ? "opacity-50" : ""}
-                      `}
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Drag Handle */}
-                        <div className="flex items-center gap-2">
-                          {item.status !== "downloading" && (
-                            <GripVertical className="h-5 w-5 text-gray-400" />
-                          )}
-                        </div>
-
-                        {/* Type Icon */}
-                        <div
-                          className={`p-2 rounded-full ${getTypeColor(item.type)} bg-opacity-20`}
-                        >
-                          {getTypeIcon(item.type)}
-                        </div>
-
-                        {/* Item Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold truncate">
-                              {item.title}
-                            </h3>
-                            {getStatusIcon(item.status)}
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>{item.size}</span>
-                            <span>{item.quality}</span>
-                            <span>
-                              Aggiunto: {item.addedAt.toLocaleTimeString()}
-                            </span>
-                          </div>
-
-                          {/* Progress Bar */}
-                          {item.status === "downloading" &&
-                            item.progress !== undefined && (
-                              <div className="mt-2 space-y-1">
-                                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                  <span>{item.progress}%</span>
-                                  <span>{item.downloadSpeed}</span>
-                                  <span>{item.estimatedTime}</span>
-                                </div>
-                                <Progress
-                                  value={item.progress}
-                                  className="h-2"
-                                />
-                              </div>
-                            )}
-                        </div>
-
-                        {/* Status Badge */}
-                        <div className="flex items-center gap-2">
-                          {getStatusBadge(item.status)}
-
-                          {/* Action Buttons */}
-                          {item.status === "downloading" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => togglePauseResume(item.id)}
-                            >
-                              <Pause className="h-4 w-4" />
-                            </Button>
-                          )}
-
-                          {item.status === "pending" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => togglePauseResume(item.id)}
-                            >
-                              <Play className="h-4 w-4" />
-                            </Button>
-                          )}
-
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => removeFromQueue(item.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <QueueCard {...queueCardProps} item={item} />
                   </div>
                 ))
               )}
@@ -380,56 +287,7 @@ const Queue = () => {
                 </div>
               ) : (
                 completedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative bg-card border rounded-lg p-4 transition-all opacity-75"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Number */}
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg font-bold text-green-500 w-8 text-center">
-                          ✓
-                        </div>
-                      </div>
-
-                      {/* Type Icon */}
-                      <div
-                        className={`p-2 rounded-full ${getTypeColor(item.type)} bg-opacity-20`}
-                      >
-                        {getTypeIcon(item.type)}
-                      </div>
-
-                      {/* Item Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold truncate">
-                            {item.title}
-                          </h3>
-                          {getStatusIcon(item.status)}
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>{item.size}</span>
-                          <span>{item.quality}</span>
-                          <span>
-                            Completato: {item.addedAt.toLocaleTimeString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(item.status)}
-
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removeFromQueue(item.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <QueueCard {...queueCardProps} item={item} />
                 ))
               )}
             </div>
@@ -449,68 +307,7 @@ const Queue = () => {
                 </div>
               ) : (
                 errorItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative bg-card border border-red-200 rounded-lg p-4 transition-all opacity-75"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Number */}
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg font-bold text-red-500 w-8 text-center">
-                          !
-                        </div>
-                      </div>
-
-                      {/* Type Icon */}
-                      <div
-                        className={`p-2 rounded-full ${getTypeColor(item.type)} bg-opacity-20`}
-                      >
-                        {getTypeIcon(item.type)}
-                      </div>
-
-                      {/* Item Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold truncate">
-                            {item.title}
-                          </h3>
-                          {getStatusIcon(item.status)}
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>{item.size}</span>
-                          <span>{item.quality}</span>
-                          <span>
-                            Errore: {item.addedAt.toLocaleTimeString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(item.status)}
-
-                        {/* Action Buttons */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => retryDownload(item.id)}
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <Play className="h-4 w-4 mr-1" />
-                          Riprova
-                        </Button>
-
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removeFromQueue(item.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <QueueCard {...queueCardProps} item={item} />
                 ))
               )}
             </div>
