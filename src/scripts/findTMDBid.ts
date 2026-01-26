@@ -13,6 +13,7 @@ export interface TMDBSearchResult {
   released?: string;
   poster_path?: string;
   overview?: string;
+  popularity?: number;
 }
 
 export interface TMDBSearchResponse {
@@ -50,14 +51,20 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
  * @param query - Nome del film o serie TV da cercare
  * @param mediaType - Tipo di media ('movie', 'tv' o 'all' per entrambi)
  * @param year - Anno opzionale per filtrare i risultati
+ * @param minPopularity - Popolarità minima opzionale per filtrare i risultati
  * @returns Promise che risolve con l'array dei risultati trovati
  */
 export const findTMDBId = async (
   query: string,
   mediaType: "movie" | "tv" | "all" = "all",
   year?: number,
+  minPopularity?: number,
 ): Promise<TMDBSearchResult[]> => {
-  debugLog(`Searching TMDB for: "${query}"`, { mediaType, year });
+  debugLog(`Searching TMDB for: "${query}"`, {
+    mediaType,
+    year,
+    minPopularity,
+  });
 
   const apiKey = getTMDBApiKey();
 
@@ -102,8 +109,20 @@ export const findTMDBId = async (
       );
     }
 
-    // Ordina per rilevanza (prima i risultati con poster)
+    // Filtra per popolarità minima se specificata
+    if (minPopularity !== undefined) {
+      filteredResults = filteredResults.filter(
+        (result) => (result.popularity || 0) >= minPopularity,
+      );
+    }
+
+    // Ordina per popolarità (decrescente) e poi per rilevanza (prima i risultati con poster)
     filteredResults.sort((a, b) => {
+      // Prima ordina per popolarità
+      const popDiff = (b.popularity || 0) - (a.popularity || 0);
+      if (popDiff !== 0) return popDiff;
+
+      // Se popolarità è uguale, ordina per presenza del poster
       if (a.poster_path && !b.poster_path) return -1;
       if (!a.poster_path && b.poster_path) return 1;
       return 0;
@@ -125,15 +144,17 @@ export const findTMDBId = async (
  * @param query - Nome del film o serie TV da cercare
  * @param mediaType - Tipo di media ('movie', 'tv' o 'all')
  * @param year - Anno opzionale per filtrare i risultati
+ * @param minPopularity - Popolarità minima opzionale per filtrare i risultati
  * @returns Promise che risolve con il primo risultato o null
  */
 export const findFirstTMDBId = async (
   query: string,
   mediaType: "movie" | "tv" | "all" = "all",
   year?: number,
+  minPopularity?: number,
 ): Promise<TMDBSearchResult | null> => {
   try {
-    const results = await findTMDBId(query, mediaType, year);
+    const results = await findTMDBId(query, mediaType, year, minPopularity);
     return results.length > 0 ? results[0] : null;
   } catch (error) {
     debugError("Error getting first TMDB result", error);
