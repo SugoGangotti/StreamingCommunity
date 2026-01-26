@@ -37,64 +37,49 @@ const InDownloadCard = ({
       }}
     >
       <div className="w-1/5 rounded-2xl overflow-hidden">
-        <ImageCustom
-          tmdbId={item.tmdbId}
-          alt={item.title}
-          mediaType={
-            item.type === "series"
-              ? "tv"
-              : item.type === "movie"
-                ? "movie"
-                : "anime"
-          }
-        />
+        <ImageCustom posterPath={item.poster_path} alt={item.title} />
       </div>
 
-      <div className="w-4/5 flex flex-col h-full gap-2">
-        <CardHeader className="text-xl font-semibold p-1 flex items-center justify-between">
-          <div className="flex gap-4 items-center">
-            {item.title}
+      <div className="w-4/5 flex flex-1 flex-col gap-2 justify-between">
+        <div className="flex-1">
+          <CardHeader className="text-xl font-semibold p-1 flex items-center justify-between">
+            <div className="flex gap-4 items-center">
+              {item.title}
 
-            {getStatusBadge(item.status)}
-          </div>
+              {getStatusBadge(item.status)}
+            </div>
 
-          <div className="flex gap-2">
-            <Badge>{item.quality}</Badge>
-            <Badge>{item.size}</Badge>
-          </div>
-        </CardHeader>
+            <div className="flex gap-2">
+              <Badge>{item.quality}</Badge>
+              <Badge>{item.size}</Badge>
+            </div>
+          </CardHeader>
 
-        <CardContent className="h-full">
-          <CardDescription className="h-full">
-            <CustomDescription
-              tmdbId={item.tmdbId}
-              mediaType={
-                item.type === "series"
-                  ? "tv"
-                  : item.type === "movie"
-                    ? "movie"
-                    : "anime"
-              }
+          <CardContent className="h-full px-2">
+            <CardDescription className="h-full">
+              <CustomDescription description={item.description} />
+            </CardDescription>
+          </CardContent>
+        </div>
+
+        <div>
+          <CardFooter className="w-full justify-between items-center p-1">
+            <div className="flex gap-2">
+              <Badge>{item.downloadSpeed}</Badge>
+
+              <Badge>{item.estimatedTime}</Badge>
+
+              <Badge>{item.progress}%</Badge>
+            </div>
+
+            <RelatedButtons
+              removeFromQueue={removeFromQueue}
+              item={item}
+              retryDownload={retryDownload}
+              togglePauseResume={togglePauseResume}
             />
-          </CardDescription>
-        </CardContent>
-
-        <CardFooter className="w-full justify-between mb-auto items-center p-1">
-          <div className="flex gap-2">
-            <Badge>{item.downloadSpeed}</Badge>
-
-            <Badge>{item.estimatedTime}</Badge>
-
-            <Badge>{item.progress}%</Badge>
-          </div>
-
-          <RelatedButtons
-            removeFromQueue={removeFromQueue}
-            item={item}
-            retryDownload={retryDownload}
-            togglePauseResume={togglePauseResume}
-          />
-        </CardFooter>
+          </CardFooter>
+        </div>
       </div>
     </Card>
   ));
