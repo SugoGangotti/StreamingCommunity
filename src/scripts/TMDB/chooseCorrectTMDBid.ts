@@ -1,4 +1,4 @@
-import { debugLog, debugError } from "./debug";
+import { debugLog, debugError } from "../debug";
 import { findTMDBId, type TMDBSearchResult } from "./findTMDBid";
 import type { FoundMediaItemType } from "@/types/FoundMediaItemType";
 

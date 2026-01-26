@@ -17,14 +17,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, CheckCircle, XCircle } from "lucide-react";
-import { chooseCorrectTMDBId } from "@/scripts/chooseCorrectTMDBid";
-import { createItemFromTMDBid } from "@/scripts/createItemFromTMDBid";
-import { initializeTMDBKey } from "@/scripts/findTMDBid";
+import { chooseCorrectTMDBId } from "@/scripts/TMDB/chooseCorrectTMDBid";
+import { createItemFromTMDBid } from "@/scripts/TMDB/createItemFromTMDBid";
+import { initializeTMDBKey } from "@/scripts/TMDB/findTMDBid";
 import { loadSettings } from "@/scripts/loadSettings";
 
 import type { FoundMediaItemType } from "@/types/FoundMediaItemType";
 import type { MediaItemType } from "@/types/MediaItemType";
-import type { TMDBSearchResult } from "@/scripts/findTMDBid";
+import type { TMDBSearchResult } from "@/scripts/TMDB/findTMDBid";
 import type { SettingsStateType } from "@/types/SettingsStateType";
 
 export default function TestTMDBPage() {

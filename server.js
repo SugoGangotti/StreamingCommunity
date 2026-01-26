@@ -4,7 +4,7 @@ import path from "path";
 import cors from "cors";
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 8080;
 const CONFIG_DIR = path.join(process.cwd(), "src", "config");
 
 // Section to filename mapping (matches config-manager.ts)
@@ -92,7 +92,7 @@ app.post("/api/config", async (req, res) => {
         await fs.writeFile(
           filePath,
           JSON.stringify(updatedConfig, null, 2),
-          "utf8"
+          "utf8",
         );
       }
     }
@@ -162,7 +162,7 @@ app.post("/api/config/:section", async (req, res) => {
     await fs.writeFile(
       filePath,
       JSON.stringify(updatedConfig, null, 2),
-      "utf8"
+      "utf8",
     );
 
     console.log(`${section} config updated successfully`);

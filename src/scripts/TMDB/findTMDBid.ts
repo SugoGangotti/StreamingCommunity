@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { debugLog, debugError } from "./debug";
+import { debugLog, debugError } from "../debug";
 import type { SettingsStateType } from "@/types/SettingsStateType";
 
 // Interfacce per i risultati TMDB

@@ -9,3 +9,5 @@ services:
       - ./downloads:/app/downloads
       - ./config:/app/server/config
     restart: unless-stopped
+    environment:
+      - NODE_ENV=development

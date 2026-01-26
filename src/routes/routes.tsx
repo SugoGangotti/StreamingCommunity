@@ -35,6 +35,12 @@ export const getAllRoutes = (): RouteConfig[] => [
     showInNavbar: true,
   },
   {
+    path: "/download-integrated",
+    component: Download,
+    title: "Download Integrated",
+    showInNavbar: true,
+  },
+  {
     path: "/test-tmdb",
     component: TestTMDB,
     title: "Test TMDB",

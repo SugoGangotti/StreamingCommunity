@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { debugLog, debugError } from "./debug";
-import { getTMDBDetails } from "./findTMDBid";
+import { debugLog, debugError } from "../debug";
+
 import type { MediaItemType } from "@/types/MediaItemType";
+import { getTMDBDetails } from "./findTMDBid";
 
 /**
  * Crea un elemento MediaItemType a partire da un ID TMDB
