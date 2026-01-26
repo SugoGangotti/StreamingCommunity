@@ -26,7 +26,7 @@ const Download = () => {
     .filter((item) => {
       const matchesSearch =
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase());
+        item.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = selectedType === "all" || item.type === selectedType;
       const matchesQuality =
         selectedQuality === "all" || item.quality === selectedQuality;
@@ -35,11 +35,11 @@ const Download = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case "latest":
-          return b.year - a.year;
+          return b.year! - a.year!;
         case "oldest":
-          return a.year - b.year;
+          return a.year! - b.year!;
         case "rating":
-          return b.rating - a.rating;
+          return b.rating! - a.rating!;
         case "title":
           return a.title.localeCompare(b.title);
         default:
