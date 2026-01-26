@@ -1,14 +1,12 @@
 export type MediaItemType = {
   id: string;
   title: string;
-  type: "movie" | "series" | "anime" | "documentary";
-  description: string;
-  year: number;
-  rating: number;
+  type: "movie" | "series" | "anime";
+  year?: number;
   duration?: string;
   seasons?: number;
   size: string;
   quality: string;
-  image: string;
   downloadUrl: string;
+  tmdbId: string;
 };
