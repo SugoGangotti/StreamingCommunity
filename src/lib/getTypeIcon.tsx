@@ -1,5 +1,5 @@
 import type { MediaItemType } from "@/types/MediaItemType";
-import { FileText, Film, Star, Tv } from "lucide-react";
+import { Film, Star, Tv } from "lucide-react";
 
 export const getTypeIcon = (type: MediaItemType["type"]) => {
   switch (type) {
@@ -9,8 +9,6 @@ export const getTypeIcon = (type: MediaItemType["type"]) => {
       return <Tv className="h-4 w-4" />;
     case "anime":
       return <Star className="h-4 w-4" />;
-    case "documentary":
-      return <FileText className="h-4 w-4" />;
     default:
       return <Film className="h-4 w-4" />;
   }

@@ -30,7 +30,6 @@ const FilterGroup = ({
           { value: "movie", label: "Movies" },
           { value: "series", label: "Series" },
           { value: "anime", label: "Anime" },
-          { value: "documentary", label: "Documentaries" },
         ]}
       />
 

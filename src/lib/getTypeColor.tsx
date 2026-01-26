@@ -8,8 +8,6 @@ export const getTypeColor = (type: MediaItemType["type"]) => {
       return "bg-green-500";
     case "anime":
       return "bg-purple-500";
-    case "documentary":
-      return "bg-orange-500";
     default:
       return "bg-gray-500";
   }
