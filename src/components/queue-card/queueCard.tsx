@@ -45,26 +45,10 @@ const getCardProps = (
         onDragEnd: handleDragEnd,
         className: `
           relative bg-card border rounded-lg p-4 transition-all flex-1
-          cursor-move hover:shadow-md
+          cursor-grab hover:shadow-md
           ${dragOverItem === item.id ? "border-blue-500 bg-blue-50/50" : ""}
           ${draggedItem === item.id ? "opacity-50" : ""}
         `,
-      };
-    case "downloading":
-      return {
-        draggable: false,
-        className: `
-          relative bg-card border rounded-lg p-4 transition-all flex-1
-          cursor-not-allowed opacity-90 overflow-hidden
-          ${dragOverItem === item.id ? "border-blue-500 bg-blue-50/50" : ""}
-          ${draggedItem === item.id ? "opacity-50" : ""}
-        `,
-        style: {
-          backgroundImage:
-            item.progress !== undefined
-              ? `linear-gradient(to right, rgb(59 130 246 / 0.1) 0%, rgb(59 130 246 / 0.1) ${item.progress}%, transparent ${item.progress}%, transparent 100%)`
-              : undefined,
-        },
       };
     default:
       return {
