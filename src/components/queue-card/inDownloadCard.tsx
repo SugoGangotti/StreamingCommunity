@@ -37,7 +37,17 @@ const InDownloadCard = ({
       }}
     >
       <div className="w-1/5 rounded-2xl overflow-hidden">
-        <ImageCustom tmdbPath={item.image} alt={item.title} />
+        <ImageCustom
+          tmdbId={item.tmdbId}
+          alt={item.title}
+          mediaType={
+            item.type === "series"
+              ? "tv"
+              : item.type === "movie"
+                ? "movie"
+                : "anime"
+          }
+        />
       </div>
 
       <div className="w-4/5 flex flex-col h-full gap-2">
