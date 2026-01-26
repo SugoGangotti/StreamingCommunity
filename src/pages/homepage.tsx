@@ -2,14 +2,10 @@ import TrendingBanner from "@/components/trending-banner";
 import { useState, useEffect } from "react";
 import { loadSettings } from "@/scripts/loadSettings";
 import UpdateVersion from "@/components/update-version";
-import type { SettingType } from "@/types/SettingsType";
-
-interface SettingsState {
-  [key: string]: SettingType;
-}
+import type { SettingsStateType } from "@/types/SettingsStateType";
 
 const Homepage = () => {
-  const [settings, setSettings] = useState<SettingsState>({});
+  const [settings, setSettings] = useState<SettingsStateType>({});
 
   useEffect(() => {
     loadSettings(setSettings);
