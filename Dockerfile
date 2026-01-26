@@ -15,7 +15,7 @@ COPY requirements.txt ./
 RUN npm install
 
 # Install Python dependencies
-RUN pip3 install -r requirements.txt
+RUN pip3 install --break-system-packages -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 8080
 
 # Start the backend server
-CMD ["npm", "run", "start:server"]
+CMD ["npm", "run", "server"]
