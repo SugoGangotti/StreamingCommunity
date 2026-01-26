@@ -1,95 +1,12 @@
 import { useState } from "react";
-import { CheckCircle, AlertCircle, Clock, Download } from "lucide-react";
+import { CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import type { QueueItemType } from "@/types/QueueItemType";
 import QueueCard from "@/components/queue-card/queueCard";
+import InDownloadCard from "@/components/queue-card/inDownloadCard";
+import { queueData } from "@/MOCKUP/queueData";
 
 const Queue = () => {
-  // Mock data per la coda
-  const [queueItems, setQueueItems] = useState<QueueItemType[]>([
-    {
-      id: "1",
-      title: "Inception",
-      type: "movie",
-      description:
-        "A thief who steals corporate secrets through dream-sharing technology.",
-      year: 2010,
-      rating: 8.8,
-      size: "2.1 GB",
-      quality: "1080p",
-      image: "/images/inception.jpg",
-      downloadUrl: "https://example.com/inception",
-      status: "downloading",
-      progress: 65,
-      downloadSpeed: "5.2 MB/s",
-      estimatedTime: "3 min",
-      addedAt: new Date("2024-01-20T10:30:00"),
-    },
-    {
-      id: "2",
-      title: "Breaking Bad - Stagione 1",
-      type: "series",
-      description:
-        "A high school chemistry teacher turned methamphetamine cook.",
-      year: 2008,
-      rating: 9.5,
-      seasons: 5,
-      size: "8.5 GB",
-      quality: "720p",
-      image: "/images/breaking-bad.jpg",
-      downloadUrl: "https://example.com/breaking-bad-s1",
-      status: "pending",
-      addedAt: new Date("2024-01-20T11:15:00"),
-    },
-    {
-      id: "3",
-      title: "Attack on Titan",
-      type: "anime",
-      description:
-        "Humanity fights for survival against giant humanoid Titans.",
-      year: 2013,
-      rating: 9.0,
-      seasons: 4,
-      size: "12.3 GB",
-      quality: "1080p",
-      image: "/images/attack-on-titan.jpg",
-      downloadUrl: "https://example.com/attack-on-titan",
-      status: "pending",
-      addedAt: new Date("2024-01-20T12:00:00"),
-    },
-    {
-      id: "4",
-      title: "Our Planet",
-      type: "documentary",
-      description:
-        "Experience our planet's natural beauty and examine how climate change impacts all living creatures.",
-      year: 2019,
-      rating: 9.3,
-      size: "4.7 GB",
-      quality: "4K",
-      image: "/images/our-planet.jpg",
-      downloadUrl: "https://example.com/our-planet",
-      status: "completed",
-      progress: 100,
-      addedAt: new Date("2024-01-20T09:45:00"),
-    },
-    {
-      id: "5",
-      title: "The Matrix",
-      type: "movie",
-      description:
-        "A computer programmer discovers that reality as he knows it is a simulation.",
-      year: 1999,
-      rating: 8.7,
-      size: "1.8 GB",
-      quality: "1080p",
-      image: "/images/matrix.jpg",
-      downloadUrl: "https://example.com/matrix",
-      status: "error",
-      addedAt: new Date("2024-01-20T13:30:00"),
-      errorCode: "SC-001",
-    },
-  ]);
+  const [queueItems, setQueueItems] = useState(queueData);
 
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOverItem, setDragOverItem] = useState<string | null>(null);
@@ -182,10 +99,6 @@ const Queue = () => {
   );
   const errorItems = queueItems.filter((item) => item.status === "error");
 
-  const activeItems = queueItems.filter(
-    (item) => item.status !== "completed" && item.status !== "error",
-  );
-
   const queueCardProps = {
     retryDownload,
     togglePauseResume,
@@ -243,20 +156,30 @@ const Queue = () => {
 
         {/* Queue List */}
         <div className="space-y-6">
+          {/* Currently Downloading */}
+          {downloadingItems.length > 0 && (
+            <InDownloadCard
+              downloadingItems={downloadingItems}
+              removeFromQueue={removeFromQueue}
+              retryDownload={retryDownload}
+              togglePauseResume={togglePauseResume}
+            />
+          )}
+
           {/* Active Downloads */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Download className="h-5 w-5" />
-              Download Attivi
+              <Clock className="h-5 w-5" />
+              Coda Download
             </h2>
             <div className="space-y-2">
-              {activeItems.length === 0 ? (
+              {pendingItems.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nessun download attivo</p>
+                  <p>Nessun elemento in coda</p>
                 </div>
               ) : (
-                activeItems.map((item, index) => (
+                pendingItems.map((item, index) => (
                   <div
                     key={item.id}
                     className="flex items-start gap-3 w-full h-full"
