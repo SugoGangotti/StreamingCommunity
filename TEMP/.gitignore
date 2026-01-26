@@ -50,10 +50,12 @@ downloaded_files/
 Video
 note.txt
 cmd.txt
-bot_config.json
 scripts.json
 active_requests.json
 working_proxies.json
 start.sh
 .DS_Store
 GUI/db.sqlite3
+console.log
+/conf/domains.json
+/.cache

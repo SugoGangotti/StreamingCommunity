@@ -1,4 +1,5 @@
 # 23.06.24
+# ruff: noqa: E402
 
 import os
 import sys
@@ -9,17 +10,17 @@ src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(src_path)
 
 
-from StreamingCommunity.Util.message import start_message
-from StreamingCommunity.Util.logger import Logger
-from StreamingCommunity import HLS_Downloader
+from StreamingCommunity.utils import config_manager, start_message
+from StreamingCommunity.core.downloader import HLS_Downloader
 
 
 start_message()
-Logger()
+conf_extension = config_manager.config.get("M3U8_CONVERSION", "extension")
 hls_process =  HLS_Downloader(
-    output_path=".\\Video\\test.mp4",
-    m3u8_url="https://acdn.ak-stream-videoplatform.sky.it/hls/2024/11/21/968275/master.m3u8"
-).start()
-
-thereIsError = hls_process['error'] is not None
-print(thereIsError)
+    m3u8_url="",
+    headers={},
+    license_url=None,
+    output_path=fr".\Video\Prova.{conf_extension}",
+)
+out_path, need_stop = hls_process.start()
+print("Downloaded to:", out_path, "Stopped:", need_stop)

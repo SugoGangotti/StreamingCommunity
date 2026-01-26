@@ -1,0 +1,219 @@
+{% extends "searchapp/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="py-4 sm:py-8 animate-fade-in">
+  
+  <!-- Hero Banner -->
+  <div class="relative h-[40vh] sm:h-[50vh] lg:h-[60vh] -mx-4 sm:-mx-8 lg:-mx-16 mb-8 sm:mb-12 overflow-hidden">
+    <!-- Background Image -->
+    {% if bg_image_url %}
+    <div 
+      class="absolute inset-0 bg-cover bg-center"
+      style="background-image: url('{{ bg_image_url }}');"
+    ></div>
+    {% endif %}
+    
+    <!-- Gradients -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+    
+    <!-- Content -->
+    <div class="relative h-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col justify-end pb-8 sm:pb-12">
+      <button 
+        onclick="window.history.back()" 
+        class="absolute top-4 sm:top-8 left-4 sm:left-8 lg:left-16 p-2.5 sm:p-3 bg-black/60 hover:bg-black/80 backdrop-blur-sm rounded-full transition-all"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+
+      <div class="max-w-3xl">
+        <!-- Badges -->
+        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <span class="px-3 py-1 sm:px-4 sm:py-1.5 bg-red-600 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded shadow-xl">
+            Serie TV
+          </span>
+          <span class="px-3 py-1 sm:px-4 sm:py-1.5 bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold rounded">
+            {{ seasons|length }} Stagioni
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl text-center sm:text-left">
+          {{ title }}
+        </h1>
+
+        <!-- Description -->
+        <p class="text-sm sm:text-lg lg:text-xl text-gray-300 mb-6 sm:mb-8 max-w-2xl drop-shadow-lg text-center sm:text-left px-2 sm:px-0">
+          Seleziona gli episodi che desideri scaricare. Puoi scaricare stagioni complete o episodi singoli.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seasons Section -->
+  <div class="space-y-6 sm:space-y-8">
+    {% for season in seasons %}
+    <div class="bg-gradient-to-br from-gray-900/80 to-gray-900/40 backdrop-blur-xl border border-gray-800 rounded-xl sm:rounded-2xl overflow-hidden hover:border-gray-700 transition-all">
+      
+      <!-- Season Header -->
+      <div class="bg-gradient-to-r from-gray-900 to-gray-800 p-4 sm:p-6 lg:p-8 border-b border-gray-700">
+        <div class="flex flex-col gap-4 sm:gap-6">
+          <!-- Season Info -->
+          <div class="flex items-center gap-4 sm:gap-6">
+            <div class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-red-600 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-2xl shadow-red-600/50">
+              <span class="text-xl sm:text-2xl lg:text-3xl font-black text-white">{{ season.number }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 truncate">
+                Stagione {{ season.number }}
+              </h2>
+              <p class="text-gray-400 text-xs sm:text-sm lg:text-base">
+                {{ season.episodes|length }} episodi disponibili
+              </p>
+            </div>
+          </div>
+          
+          <!-- Download Full Season -->
+          <form method="post" class="w-full">
+            {% csrf_token %}
+            <input type="hidden" name="source_alias" value="{{ source_alias }}">
+            <input type="hidden" name="item_payload" value="{{ item_payload }}">
+            <input type="hidden" name="season_number" value="{{ season.number }}">
+            <input type="hidden" name="download_type" value="full_season">
+            <button 
+              type="submit" 
+              class="w-full px-6 py-3 sm:px-8 sm:py-4 bg-white hover:bg-gray-200 text-black font-bold text-xs sm:text-sm rounded-lg transition-all transform hover:scale-[1.02] shadow-xl flex items-center justify-center gap-2 sm:gap-3"
+            >
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              Scarica Stagione Completa
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Episodes Section -->
+      <div class="p-4 sm:p-6 lg:p-8">
+        <form method="post" id="form-season-{{ season.number }}">
+          {% csrf_token %}
+          <input type="hidden" name="source_alias" value="{{ source_alias }}">
+          <input type="hidden" name="item_payload" value="{{ item_payload }}">
+          <input type="hidden" name="season_number" value="{{ season.number }}">
+          <input type="hidden" name="download_type" value="episodes">
+          <input type="hidden" name="selected_episodes" id="selected_episodes_{{ season.number }}" value="">
+
+          <!-- Controls Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <h3 class="text-base sm:text-lg font-bold text-white text-center sm:text-left">
+              Seleziona Episodi
+            </h3>
+            <div class="flex gap-2 sm:gap-3">
+              <button 
+                type="button" 
+                onclick="window.selectAllEpisodes({{ season.number }})" 
+                class="flex-1 sm:flex-none px-4 py-2 sm:px-5 sm:py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors"
+              >
+                Tutti
+              </button>
+              <button 
+                type="button" 
+                onclick="window.deselectAllEpisodes({{ season.number }})" 
+                class="flex-1 sm:flex-none px-4 py-2 sm:px-5 sm:py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors"
+              >
+                Nessuno
+              </button>
+            </div>
+          </div>
+
+          <!-- Episodes Grid - Mobile Optimized -->
+          <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 sm:gap-3 mb-6 sm:mb-8">
+            {% for episode in season.episodes %}
+            <label class="episode-label cursor-pointer group relative">
+              <input 
+                type="checkbox" 
+                class="episode-checkbox hidden" 
+                data-season="{{ season.number }}" 
+                value="{{ episode.number }}"
+              >
+              <div class="episode-card relative bg-gray-800/50 hover:bg-gray-700/50 border-2 border-gray-700 rounded-lg p-2.5 sm:p-3 lg:p-4 transition-all text-center overflow-hidden aspect-square flex flex-col items-center justify-center">
+                <!-- Episode Number -->
+                <div class="episode-number text-lg sm:text-xl lg:text-2xl font-black text-gray-500 mb-1 transition-colors">
+                  {{ episode.number }}
+                </div>
+                
+                <!-- Episode Name (hidden on mobile for cleaner look) -->
+                <div class="hidden sm:block text-[9px] lg:text-[10px] text-gray-600 uppercase font-semibold truncate w-full transition-colors" title="{{ episode.name|default:'Episodio' }}">
+                  {% if episode.name %}EP{% else %}—{% endif %}
+                </div>
+
+                <!-- Selected Indicator -->
+                <div class="check-overlay absolute inset-0 bg-red-600 opacity-0 transition-opacity flex items-center justify-center rounded-lg">
+                  <svg class="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+
+                <!-- Play Icon on Hover (desktop only) -->
+                <div class="play-icon absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg hidden sm:flex">
+                  <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="w-full py-4 sm:py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-sm sm:text-base rounded-lg sm:rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-red-600/30 flex items-center justify-center gap-2 sm:gap-3"
+          >
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Scarica Episodi Selezionati
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .episode-checkbox:checked + .episode-card {
+    border-color: rgb(220 38 38);
+    background-color: rgba(220, 38, 38, 0.1);
+  }
+  .episode-checkbox:checked + .episode-card .episode-number {
+    color: rgb(248 113 113);
+  }
+  .episode-checkbox:checked + .episode-card .check-overlay {
+    opacity: 0.9;
+  }
+  .episode-checkbox:checked + .episode-card .play-icon {
+    opacity: 0;
+  }
+  
+  /* Touch feedback for mobile */
+  @media (hover: none) {
+    .episode-label:active .episode-card {
+      transform: scale(0.95);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="module">
+  import { init } from '{% static "js/series.js" %}';
+  init();
+</script>
+{% endblock %}
