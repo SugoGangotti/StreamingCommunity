@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  arrowar:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./downloads:/app/downloads
+      - ./config:/app/server/config
+    restart: unless-stopped
