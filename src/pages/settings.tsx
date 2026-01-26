@@ -39,10 +39,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import AccountDialog from "@/components/accountDialog";
-
-interface SettingsState {
-  [key: string]: any;
-}
+import type { SettingsStateType } from "@/types/SettingsStateType";
 
 interface Section {
   id: string;
@@ -52,7 +49,7 @@ interface Section {
 }
 
 const Settings = () => {
-  const [settings, setSettings] = useState<SettingsState>({});
+  const [settings, setSettings] = useState<SettingsStateType>({});
   const [activeTab, setActiveTab] = useState("general");
 
   // Initialize settings with default values from schema
@@ -80,7 +77,7 @@ const Settings = () => {
   };
 
   const handleReset = () => {
-    const defaultSettings: SettingsState = {};
+    const defaultSettings: SettingsStateType = {};
 
     // Load defaults from both frontend and sections
     if (optionsSchema.frontend) {
