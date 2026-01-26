@@ -10,6 +10,7 @@ export interface TMDBSearchResult {
   media_type: "movie" | "tv";
   release_date?: string;
   first_air_date?: string;
+  released?: string;
   poster_path?: string;
   overview?: string;
 }

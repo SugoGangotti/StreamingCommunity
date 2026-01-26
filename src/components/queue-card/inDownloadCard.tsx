@@ -66,8 +66,16 @@ const InDownloadCard = ({
 
         <CardContent className="h-full">
           <CardDescription className="h-full">
-            {item.description}
-            <CustomDescription tmdbUrl={item.tmdbId} />
+            <CustomDescription
+              tmdbId={item.tmdbId}
+              mediaType={
+                item.type === "series"
+                  ? "tv"
+                  : item.type === "movie"
+                    ? "movie"
+                    : "anime"
+              }
+            />
           </CardDescription>
         </CardContent>
 
