@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { getStatusIcon } from "@/lib/getStatusIcon";
 import type { QueueItemType } from "@/types/QueueItemType";
 
@@ -22,22 +21,6 @@ export const ItemInfo = ({ item }: ItemInfoProps) => {
         )}
         {item.status === "error" && (
           <span>Codice Errore: {item.errorCode}</span>
-        )}
-
-        {item.status === "downloading" && item.progress !== undefined && (
-          <>
-            <Badge>
-              <span>{item.progress}%</span>
-            </Badge>
-
-            <Badge>
-              <span>{item.downloadSpeed}</span>
-            </Badge>
-
-            <Badge>
-              <span>{item.estimatedTime}</span>
-            </Badge>
-          </>
         )}
       </div>
     </div>
