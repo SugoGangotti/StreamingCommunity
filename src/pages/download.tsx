@@ -1,25 +1,14 @@
-import { useState, useEffect } from "react";
-import { loadSettings } from "@/scripts/loadSettings";
-import type { SettingType } from "@/types/SettingsType";
+import { useState } from "react";
 import DownloadSearchbar from "@/components/searchbar-and-filters/downloadSearchbar";
 import { mediaItems } from "@/MOCKUP/searchData";
 import MediaItem from "@/components/mediaItem";
 import NoResults from "@/components/noResults";
 
-interface SettingsState {
-  [key: string]: SettingType;
-}
-
 const Download = () => {
-  const [settings, setSettings] = useState<SettingsState>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedQuality, setSelectedQuality] = useState("all");
   const [sortBy, setSortBy] = useState("latest");
-
-  useEffect(() => {
-    loadSettings(setSettings);
-  }, []);
 
   // Filter and sort logic
   const filteredItems = mediaItems
