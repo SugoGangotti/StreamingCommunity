@@ -4,6 +4,7 @@ import LoginPage from "@/pages/login";
 import { Queue } from "@/pages/queue";
 import Settings from "@/pages/settings";
 import SignupPage from "@/pages/signup";
+import TestTMDB from "@/pages/test-tmdb";
 
 export interface RouteConfig {
   path: string;
@@ -31,6 +32,12 @@ export const getAllRoutes = (): RouteConfig[] => [
     path: "/download",
     component: Download,
     title: "Download",
+    showInNavbar: true,
+  },
+  {
+    path: "/test-tmdb",
+    component: TestTMDB,
+    title: "Test TMDB",
     showInNavbar: true,
   },
   {
