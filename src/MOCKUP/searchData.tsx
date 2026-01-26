@@ -1,6 +1,6 @@
-import type { MediaItem } from "@/types/MediaItemType";
+import type { MediaItemType } from "@/types/MediaItemType";
 
-export const mediaItems: MediaItem[] = [
+export const mediaItems: MediaItemType[] = [
   {
     id: "1",
     title: "Inception",
@@ -14,6 +14,7 @@ export const mediaItems: MediaItem[] = [
     quality: "1080p",
     image: "https://via.placeholder.com/300x450/374151/ffffff?text=Inception",
     downloadUrl: "https://example.com/inception",
+    tmdbId: "1",
   },
   {
     id: "2",
@@ -29,6 +30,7 @@ export const mediaItems: MediaItem[] = [
     image:
       "https://via.placeholder.com/300x450/374151/ffffff?text=Breaking+Bad",
     downloadUrl: "https://example.com/breaking-bad",
+    tmdbId: "2",
   },
   {
     id: "3",
@@ -44,6 +46,7 @@ export const mediaItems: MediaItem[] = [
     image:
       "https://via.placeholder.com/300x450/374151/ffffff?text=Attack+on+Titan",
     downloadUrl: "https://example.com/attack-on-titan",
+    tmdbId: "3",
   },
   {
     id: "4",
@@ -59,6 +62,7 @@ export const mediaItems: MediaItem[] = [
     image:
       "https://via.placeholder.com/300x450/374151/ffffff?text=Planet+Earth+II",
     downloadUrl: "https://example.com/planet-earth",
+    tmdbId: "4",
   },
   {
     id: "5",
@@ -73,6 +77,7 @@ export const mediaItems: MediaItem[] = [
     quality: "1080p",
     image: "https://via.placeholder.com/300x450/374151/ffffff?text=Dark+Knight",
     downloadUrl: "https://example.com/dark-knight",
+    tmdbId: "5",
   },
   {
     id: "6",
@@ -88,5 +93,6 @@ export const mediaItems: MediaItem[] = [
     image:
       "https://via.placeholder.com/300x450/374151/ffffff?text=Stranger+Things",
     downloadUrl: "https://example.com/stranger-things",
+    tmdbId: "6",
   },
 ];
