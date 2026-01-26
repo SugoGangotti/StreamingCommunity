@@ -7,6 +7,7 @@ import { Badge } from "./ui/badge";
 
 import { getTypeColor } from "@/lib/getTypeColor";
 import { getTypeIcon } from "@/lib/getTypeIcon";
+import ImageCustom from "./imageCustom";
 
 interface MediaItemProps {
   item: MediaItemType;
@@ -16,15 +17,12 @@ const MediaItem = ({ item }: MediaItemProps) => {
   return (
     <Card
       key={item.id}
-      className="group hover:shadow-lg transition-all duration-300 overflow-hidden"
+      className="group hover:shadow-lg transition-all duration-300 overflow-hidden pt-0"
     >
       {/* Image Container */}
       <div className="relative aspect-2/3 overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        <ImageCustom posterPath={item.poster_path} alt={item.title} />
+
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
 
         {/* Type Badge */}
@@ -76,7 +74,7 @@ const MediaItem = ({ item }: MediaItemProps) => {
           {item.seasons && (
             <>
               <Tv className="h-3 w-3 ml-2" />
-              <span>{item.seasons} seasons</span>
+              <span>{item.number_of_seasons} seasons</span>
             </>
           )}
         </div>
