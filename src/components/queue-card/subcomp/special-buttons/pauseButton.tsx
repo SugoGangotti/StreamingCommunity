@@ -15,7 +15,7 @@ interface PauseButtonProps {
 const PauseButton = ({ togglePauseResume, item }: PauseButtonProps) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Button
           size="icon"
           variant="default"

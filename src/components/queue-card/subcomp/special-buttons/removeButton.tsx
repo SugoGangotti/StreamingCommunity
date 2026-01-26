@@ -14,7 +14,7 @@ interface RemoveButtonProps {
 export const RemoveButton = ({ removeFromQueue, id }: RemoveButtonProps) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Button
           size="icon"
           variant="destructive"

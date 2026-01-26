@@ -15,7 +15,7 @@ interface RetryButtonProps {
 export const RetryButton = ({ retryDownload, item }: RetryButtonProps) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Button
           size="icon"
           variant="default"
