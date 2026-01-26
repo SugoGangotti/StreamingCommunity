@@ -1,6 +1,6 @@
 import { debugLog, debugError } from "./debug";
 import { findTMDBId, type TMDBSearchResult } from "./findTMDBid";
-import type { MediaItemType } from "@/types/MediaItemType";
+import type { FoundMediaItemType } from "@/types/FoundMediaItemType";
 
 /**
  * Punteggio di confidenza per il match tra media item e risultato TMDB
@@ -14,7 +14,9 @@ interface MatchScore {
 /**
  * Converte il tipo MediaItemType in tipo TMDB
  */
-const convertMediaType = (mediaType: MediaItemType["type"]): "movie" | "tv" => {
+const convertMediaType = (
+  mediaType: FoundMediaItemType["type"],
+): "movie" | "tv" => {
   return mediaType === "movie" ? "movie" : "tv";
 };
 
@@ -22,7 +24,7 @@ const convertMediaType = (mediaType: MediaItemType["type"]): "movie" | "tv" => {
  * Calcola il punteggio di match per un risultato TMDB
  */
 const calculateMatchScore = (
-  mediaItem: MediaItemType,
+  mediaItem: FoundMediaItemType,
   tmdbResult: TMDBSearchResult,
 ): MatchScore => {
   let score = 0;
@@ -145,7 +147,7 @@ const levenshteinDistance = (str1: string, str2: string): number => {
  * @returns Promise con il risultato migliore o null se nessun match soddisfacente
  */
 export const chooseCorrectTMDBId = async (
-  mediaItem: MediaItemType,
+  mediaItem: FoundMediaItemType,
   minScore: number = 50,
 ): Promise<TMDBSearchResult | null> => {
   debugLog(`Choosing correct TMDB ID for: "${mediaItem.title}"`, {
@@ -217,7 +219,7 @@ export const chooseCorrectTMDBId = async (
  * @returns Promise con l'ID TMDB o null
  */
 export const chooseCorrectTMDBIdOnly = async (
-  mediaItem: MediaItemType,
+  mediaItem: FoundMediaItemType,
   minScore: number = 50,
 ): Promise<number | null> => {
   const result = await chooseCorrectTMDBId(mediaItem, minScore);
@@ -231,7 +233,7 @@ export const chooseCorrectTMDBIdOnly = async (
  * @returns Promise con true se corrisponde, false altrimenti
  */
 export const verifyTMDBId = async (
-  mediaItem: MediaItemType,
+  mediaItem: FoundMediaItemType,
   tmdbId: number,
 ): Promise<boolean> => {
   try {
@@ -249,7 +251,7 @@ export const verifyTMDBId = async (
  * @returns Promise con array di match scores ordinati per punteggio
  */
 export const getAllTMDBMatches = async (
-  mediaItem: MediaItemType,
+  mediaItem: FoundMediaItemType,
 ): Promise<MatchScore[]> => {
   try {
     const tmdbMediaType = convertMediaType(mediaItem.type);
